@@ -1,0 +1,50 @@
+<svg width="840" height="760" viewBox="0 0 840 760" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="tube" x1="132" y1="118" x2="668" y2="620" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#C988FF"/>
+      <stop offset="0.32" stop-color="#7D2BFF"/>
+      <stop offset="0.66" stop-color="#4A16D4"/>
+      <stop offset="1" stop-color="#EAB6FF"/>
+    </linearGradient>
+    <linearGradient id="highlight" x1="188" y1="130" x2="641" y2="544" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFF9FF"/>
+      <stop offset="0.28" stop-color="#FFD6FF"/>
+      <stop offset="0.62" stop-color="#E48FFF"/>
+      <stop offset="1" stop-color="#FFF6FF"/>
+    </linearGradient>
+    <radialGradient id="haze" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(418 369) rotate(90) scale(302 328)">
+      <stop stop-color="#A946FF" stop-opacity="0.65"/>
+      <stop offset="1" stop-color="#25033B" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="outerGlow" x="0" y="0" width="840" height="760" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+      <feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+      <feGaussianBlur stdDeviation="28" result="blurred"/>
+    </filter>
+    <filter id="innerGlow" x="74" y="12" width="694" height="658" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+      <feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+      <feGaussianBlur stdDeviation="6" result="effect1_foregroundBlur"/>
+    </filter>
+  </defs>
+
+  <ellipse cx="418" cy="380" rx="300" ry="260" fill="url(#haze)"/>
+
+  <g filter="url(#outerGlow)" opacity="0.9">
+    <path d="M182 530C100 418 100 156 240 132C359 112 334 308 392 364C421 392 459 392 488 364C546 308 521 112 640 132C780 156 780 418 698 530" stroke="#D16FFF" stroke-width="132" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <path d="M182 530C100 418 100 156 240 132C359 112 334 308 392 364C421 392 459 392 488 364C546 308 521 112 640 132C780 156 780 418 698 530" stroke="url(#tube)" stroke-width="116" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <g filter="url(#innerGlow)" opacity="0.98">
+    <path d="M214 503C145 410 151 190 254 170C333 155 326 303 382 355C413 383 467 383 498 355C554 303 547 155 626 170C729 190 735 410 666 503" stroke="url(#highlight)" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <path d="M229 502C271 468 321 420 381 356" stroke="#FBE0FF" stroke-opacity="0.42" stroke-width="12" stroke-linecap="round"/>
+  <path d="M457 356C520 422 572 469 648 507" stroke="#FBE0FF" stroke-opacity="0.42" stroke-width="12" stroke-linecap="round"/>
+
+  <circle cx="664" cy="118" r="19" fill="#D06DFF" fill-opacity="0.6"/>
+  <circle cx="714" cy="160" r="8" fill="#E2B0FF" fill-opacity="0.7"/>
+  <circle cx="154" cy="240" r="12" fill="#9D45FF" fill-opacity="0.42"/>
+  <circle cx="604" cy="574" r="10" fill="#F6CEFF" fill-opacity="0.58"/>
+</svg>

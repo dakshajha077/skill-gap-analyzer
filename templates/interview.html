@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+{% block title %}Interview – {{ category }} – SkillGap AI{% endblock %}
+{% block body_class %}dashboard-bg interview-session-page{% endblock %}
+{% block content %}
+
+<div class="interview-shapes-bg" style="position: fixed; top: 0; left: 0; right: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0;" aria-hidden="true">
+  <svg class="shapes-svg" viewBox="0 0 1400 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="sg1" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#f472b6" stop-opacity="0.28"/>
+        <stop offset="100%" stop-color="#f472b6" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="sg2" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.25"/>
+        <stop offset="100%" stop-color="#38bdf8" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="sg3" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#34d399" stop-opacity="0.22"/>
+        <stop offset="100%" stop-color="#34d399" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="sg4" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#fb923c" stop-opacity="0.22"/>
+        <stop offset="100%" stop-color="#fb923c" stop-opacity="0"/>
+      </radialGradient>
+    </defs>
+    <!-- Top-right pink sphere -->
+    <ellipse cx="1300" cy="120" rx="160" ry="160" fill="url(#sg1)"/>
+    <ellipse cx="1300" cy="120" rx="110" ry="110" fill="#fce7f3" opacity="0.42"/>
+    <ellipse cx="1268" cy="92" rx="42" ry="28" fill="#fff" opacity="0.28"/>
+    <!-- Top-right sky-blue pill -->
+    <rect x="1100" y="160" width="75" height="230" rx="37" fill="#7dd3fc" opacity="0.28" transform="rotate(30 1137 275)"/>
+    <!-- Bottom-left sky-blue sphere -->
+    <ellipse cx="80" cy="680" rx="140" ry="140" fill="url(#sg2)"/>
+    <ellipse cx="80" cy="680" rx="95" ry="95" fill="#bae6fd" opacity="0.35"/>
+    <ellipse cx="55" cy="655" rx="34" ry="22" fill="#fff" opacity="0.26"/>
+    <!-- Left orange/peach pill -->
+    <rect x="-80" y="530" width="300" height="80" rx="40" fill="#fdba74" opacity="0.26" transform="rotate(-15 70 570)"/>
+    <!-- Center-left mint glass sphere -->
+    <ellipse cx="370" cy="490" rx="58" ry="58" fill="url(#sg3)"/>
+    <ellipse cx="370" cy="490" rx="40" ry="40" fill="#a7f3d0" opacity="0.30"/>
+    <ellipse cx="354" cy="474" rx="15" ry="10" fill="#fff" opacity="0.33"/>
+    <!-- Bottom-right lime pill -->
+    <rect x="1050" y="620" width="340" height="95" rx="47" fill="#a3e635" opacity="0.20" transform="rotate(-20 1220 667)"/>
+    <!-- Bottom-right coral sphere -->
+    <ellipse cx="1360" cy="820" rx="130" ry="130" fill="url(#sg4)"/>
+    <ellipse cx="1360" cy="820" rx="90" ry="90" fill="#fed7aa" opacity="0.32"/>
+    <!-- Top-center fuchsia glow blob -->
+    <ellipse cx="700" cy="50" rx="220" ry="80" fill="#e879f9" opacity="0.10"/>
+  </svg>
+</div>
+
+<div class="container" style="max-width:760px;padding:2.5rem 0 4rem; position: relative; z-index: 1;">
+
+  <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
+    <span class="badge bg-{{ category_info.color }} px-3 py-2" style="font-size:0.85rem;">
+      <i class="bi {{ category_info.icon }} me-1"></i> {{ category }}
+    </span>
+    <span class="fw-semibold interview-progress" style="font-size:0.88rem;">
+      Question {{ q_index + 1 }} of {{ total }}
+    </span>
+  </div>
+
+  <div class="progress-track mb-2">
+    <div class="progress-bar-custom" style="width:{{ progress }};"></div>
+  </div>
+
+  <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
+    <div class="d-flex align-items-center gap-2">
+      <i class="bi bi-clock-fill" style="color:#6366f1;font-size:1rem;"></i>
+      <span class="interview-timer-label" style="font-size:0.85rem;color:rgba(255,255,255,0.82);font-weight:500;">Time remaining:</span>
+      <span id="questionTimer" style="font-size:1rem;font-weight:700;color:#6366f1;min-width:42px;">2:00</span>
+    </div>
+    <div style="flex:1;max-width:200px;">
+      <div style="background:rgba(99,102,241,0.12);border-radius:50px;height:6px;overflow:hidden;">
+        <div id="timerBar" style="height:100%;width:100%;background:#6366f1;border-radius:50px;transition:width 1s linear;"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="question-card mb-4">
+    <div class="question-number">Q{{ q_index + 1 }}</div>
+    <h5 style="font-weight:700;color:var(--text);font-size:1.05rem;margin:0;">{{ question }}</h5>
+  </div>
+
+  <div id="pastePopup" class="d-none mb-3" style="background:#fef2f2;border:1.5px solid #fca5a5;border-radius:10px;padding:0.8rem 1.2rem;display:flex;align-items:center;gap:10px;">
+    <i class="bi bi-shield-lock-fill" style="color:#ef4444;font-size:1.1rem;flex-shrink:0;"></i>
+    <span style="color:#b91c1c;font-size:0.88rem;font-weight:600;">Restriction: Paste is not allowed. Please type your answer manually.</span>
+  </div>
+
+  <div class="card mb-4 p-4">
+    <label class="form-label fw-semibold text-muted mb-2">Your Answer</label>
+    <textarea id="answerText" class="form-control" rows="5"
+      placeholder="Type your answer here in detail, or use the microphone below..." style="resize:vertical;user-select:text;-webkit-user-select:text;"></textarea>
+    <div class="d-flex align-items-center gap-3 mt-3 flex-wrap">
+      <button id="micBtn" class="btn btn-outline-danger">
+        <i class="bi bi-mic-fill me-1"></i> Record Voice
+      </button>
+      <span id="micStatus" class="text-muted" style="font-size:0.82rem;"></span>
+      <button id="submitBtn" class="btn btn-primary fw-bold ms-auto">
+        {% if q_index + 1 == total %}
+          <i class="bi bi-flag-fill me-1"></i> Submit Final Answer
+        {% else %}
+          <i class="bi bi-arrow-right-circle-fill me-1"></i> Submit &amp; Next
+        {% endif %}
+      </button>
+    </div>
+  </div>
+
+  <div style="background:rgba(79,70,229,0.06);border:1px solid rgba(79,70,229,0.2);border-radius:10px;padding:0.9rem 1.2rem;">
+    <p style="margin:0;font-size:0.85rem;color:rgba(255,255,255,0.90);">
+      <i class="bi bi-lightbulb-fill me-2"></i>
+      <strong>Tip:</strong> Give detailed, structured answers with examples. Aim for 3-5 clear sentences for best results.
+    </p>
+  </div>
+
+</div>
+
+<div id="loadingOverlay" class="d-none position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center" style="background:rgba(240,244,255,0.88);backdrop-filter:blur(4px);z-index:9999;">
+  <div class="text-center">
+    <div class="spinner mx-auto mb-3"></div>
+    <p style="color:var(--text);font-weight:600;font-size:1.1rem;">Analysing your answer...</p>
+    <p style="color:var(--muted);font-size:0.85rem;">AI is evaluating your response</p>
+  </div>
+</div>
+
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/interview.js') }}"></script>
+{% endblock %}

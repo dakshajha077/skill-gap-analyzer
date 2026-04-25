@@ -1,0 +1,233 @@
+{% extends 'base.html' %}
+{% block title %}GitHub Analyzer – SkillGap AI{% endblock %}
+{% block body_class %}dashboard-bg github-page{% endblock %}
+{% block content %}
+
+<div class="github-shapes-bg" style="position: fixed; top: 0; left: 0; right: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0;" aria-hidden="true">
+  <svg class="shapes-svg" viewBox="0 0 1400 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" style="animation: shapeFloat 8s ease-in-out infinite;">
+    <defs>
+      <radialGradient id="sg1" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#f472b6" stop-opacity="0.28"/>
+        <stop offset="100%" stop-color="#f472b6" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="sg2" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.25"/>
+        <stop offset="100%" stop-color="#38bdf8" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="sg3" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#34d399" stop-opacity="0.22"/>
+        <stop offset="100%" stop-color="#34d399" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="sg4" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#fb923c" stop-opacity="0.22"/>
+        <stop offset="100%" stop-color="#fb923c" stop-opacity="0"/>
+      </radialGradient>
+      <filter id="glow">
+        <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+        <feMerge>
+          <feMergeNode in="coloredBlur"/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+    </defs>
+    <ellipse cx="1300" cy="120" rx="160" ry="160" fill="url(#sg1)" style="animation: shapeGlow 3s ease-in-out infinite;" filter="url(#glow)"/>
+    <ellipse cx="1300" cy="120" rx="110" ry="110" fill="#fce7f3" opacity="0.42" style="animation: shimmerOverlay 4s ease-in-out infinite;"/>
+    <ellipse cx="1268" cy="92" rx="42" ry="28" fill="#fff" opacity="0.28"/>
+    <rect x="1100" y="160" width="75" height="230" rx="37" fill="#7dd3fc" opacity="0.28" transform="rotate(30 1137 275)" style="animation: shapeFloat 6s ease-in-out infinite 0.5s;"/>
+    <ellipse cx="80" cy="680" rx="140" ry="140" fill="url(#sg2)" style="animation: shapeGlow 4s ease-in-out infinite 1s;" filter="url(#glow)"/>
+    <ellipse cx="80" cy="680" rx="95" ry="95" fill="#bae6fd" opacity="0.35"/>
+    <ellipse cx="55" cy="655" rx="34" ry="22" fill="#fff" opacity="0.26"/>
+    <rect x="-80" y="530" width="300" height="80" rx="40" fill="#fdba74" opacity="0.26" transform="rotate(-15 70 570)" style="animation: shapeFloat 7s ease-in-out infinite 1.5s;"/>
+    <ellipse cx="370" cy="490" rx="58" ry="58" fill="url(#sg3)" style="animation: shapeGlow 3.5s ease-in-out infinite 0.8s;" filter="url(#glow)"/>
+    <ellipse cx="370" cy="490" rx="40" ry="40" fill="#a7f3d0" opacity="0.30" style="animation: shimmerOverlay 5s ease-in-out infinite 0.3s;"/>
+    <ellipse cx="354" cy="474" rx="15" ry="10" fill="#fff" opacity="0.33"/>
+    <rect x="1050" y="620" width="340" height="95" rx="47" fill="#a3e635" opacity="0.20" transform="rotate(-20 1220 667)" style="animation: shapeFloat 8s ease-in-out infinite 1.2s;"/>
+    <ellipse cx="1360" cy="820" rx="130" ry="130" fill="url(#sg4)" style="animation: shapeGlow 4.5s ease-in-out infinite 1.5s;" filter="url(#glow)"/>
+    <ellipse cx="1360" cy="820" rx="90" ry="90" fill="#fed7aa" opacity="0.32" style="animation: shimmerOverlay 6s ease-in-out infinite 0.6s;"/>
+    <ellipse cx="200" cy="300" rx="220" ry="80" fill="#e879f9" opacity="0.10" style="animation: shimmerOverlay 5s ease-in-out infinite;"/>
+  </svg>
+</div>
+
+<div class="container" style="padding:2.5rem 0 4rem; position: relative; z-index: 1;">
+
+  <div class="d-flex align-items-center justify-content-between mb-5 flex-wrap gap-3">
+    <div>
+      <h2 class="github-page-title" style="font-size:2rem;font-weight:800;margin-bottom:4px;">
+        <i class="bi bi-github me-2 text-primary"></i>GitHub Project Analyzer
+      </h2>
+      <p class="github-page-subtitle text-muted mb-0">Analyze your GitHub repo and compete on the leaderboard</p>
+    </div>
+    <a href="{{ url_for('dashboard') }}" class="btn btn-outline-primary fw-bold github-dashboard-btn">
+      <i class="bi bi-grid me-2"></i>Dashboard
+    </a>
+  </div>
+
+  <!-- Analyzer Card -->
+  <div class="card p-4 mb-5" style="border-top:4px solid var(--primary);">
+    <h6 style="font-weight:700;color:var(--text);margin-bottom:1rem;">
+      <i class="bi bi-search me-2 text-primary"></i>Analyze Repository
+    </h6>
+    <div class="d-flex gap-3 flex-wrap">
+      <input type="url" id="repoUrlInput" class="form-control"
+             placeholder="https://github.com/username/repository"
+             style="max-width:480px;"
+             value="">
+      <button class="btn btn-primary fw-bold px-4" onclick="analyzeRepo()">
+        <i class="bi bi-cpu me-2"></i>Analyze Project
+      </button>
+    </div>
+    <p class="text-muted small mt-2 mb-0">
+      <i class="bi bi-info-circle me-1"></i>Paste any public GitHub repo URL to get instant analysis
+    </p>
+
+    <!-- Result Panel -->
+    <div id="analyzeResult" style="display:none;margin-top:1.5rem;"></div>
+    <div id="analyzeLoader" style="display:none;text-align:center;padding:2rem;">
+      <div class="spinner"></div>
+      <p class="text-muted mt-2">Analyzing repository...</p>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <!-- My Repos -->
+    <div class="col-12">
+      <div class="card p-4 h-100">
+        <h6 style="font-weight:700;color:var(--text);margin-bottom:1.2rem;">
+          <i class="bi bi-person-fill me-2 text-primary"></i>My Analyzed Repos
+        </h6>
+        {% if my_repos %}
+          {% for repo in my_repos %}
+          <div class="mb-3 pb-3" style="border-bottom:1px solid var(--border);">
+            <div class="d-flex align-items-start gap-3">
+              <div class="flex-grow-1">
+                <div style="font-weight:700;font-size:0.9rem;color:var(--text);">{{ repo.repo_name or 'Repository' }}</div>
+                <a href="{{ repo.repo_url }}" target="_blank" class="text-muted" style="font-size:0.78rem;text-decoration:none;">
+                  {{ repo.repo_url[:50] }}{% if repo.repo_url|length > 50 %}...{% endif %}
+                </a>
+              </div>
+              <div class="text-end">
+                <div style="font-size:1.3rem;font-weight:800;color:{% if repo.project_score >= 8 %}var(--success){% elif repo.project_score >= 5 %}var(--primary){% else %}var(--warning){% endif %};">
+                  {{ repo.project_score }}/10
+                </div>
+                <div class="text-muted" style="font-size:0.72rem;">{{ repo.created_at[:10] }}</div>
+                <button class="btn btn-sm btn-outline-primary mt-1" onclick="toggleAnalysis({{ loop.index }})">View Analysis</button>
+              </div>
+            </div>
+            <div id="analysis-{{ loop.index }}" style="display:none;margin-top:1rem;">
+              <div class="row g-3">
+                <div class="col-md-4 text-center">
+                  <div class="score-ring" style="width:120px;height:120px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;color:white;font-weight:bold;margin:0 auto;{% if repo.project_score >= 8 %}background:linear-gradient(135deg,#10b981,#059669);{% elif repo.project_score >= 5 %}background:linear-gradient(135deg,#3b82f6,#1d4ed8);{% else %}background:linear-gradient(135deg,#f59e0b,#d97706);{% endif %}">
+                    <span style="font-size:3.5rem;line-height:1;font-weight:800;">{{ repo.project_score }}</span>
+                    <small style="font-size:1rem;opacity:0.9;margin-top:2px;">/10</small>
+                  </div>
+                  <p class="mt-2 mb-1" style="font-weight:700;font-size:0.95rem;color:var(--text);">{{ repo.repo_name }}</p>
+                  <div class="d-flex gap-1 flex-wrap justify-content-center">
+                    {% for lang in repo.languages %}
+                    <span class="pill pill-primary">{{ lang }}</span>
+                    {% endfor %}
+                  </div>
+                  <p class="text-muted small mt-2">⭐ {{ repo.stars }} Stars &nbsp;|&nbsp; 📦 {{ repo.commits }} Commits</p>
+                </div>
+                <div class="col-md-4">
+                  <h6 style="font-weight:700;color:var(--success);font-size:0.85rem;"><i class="bi bi-check-circle-fill me-1"></i>Strengths</h6>
+                  <ul class="ps-3">
+                    {% for s in repo.strengths %}
+                    <li class="text-muted" style="font-size:0.8rem;">{{ s }}</li>
+                    {% endfor %}
+                  </ul>
+                </div>
+                <div class="col-md-4">
+                  <h6 style="font-weight:700;color:var(--warning);font-size:0.85rem;"><i class="bi bi-arrow-up-circle-fill me-1"></i>Improvements</h6>
+                  <ul class="ps-3">
+                    {% for i in repo.improvements %}
+                    <li class="text-muted" style="font-size:0.8rem;">{{ i }}</li>
+                    {% endfor %}
+                  </ul>
+                </div>
+              </div>
+              <div class="mt-2">
+                <span class="badge bg-primary">README Score: {{ repo.readme_score }}/10</span>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        {% else %}
+        <div class="text-center" style="padding:2rem 0;">
+          <i class="bi bi-github text-muted" style="font-size:2.5rem;opacity:0.2;"></i>
+          <p class="text-muted mt-3">Analyze your first repo above!</p>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+async function analyzeRepo() {
+  const url = document.getElementById('repoUrlInput').value.trim();
+  if (!url) { alert('Please enter a GitHub repository URL.'); return; }
+
+  document.getElementById('analyzeResult').style.display = 'none';
+  document.getElementById('analyzeLoader').style.display = 'block';
+
+  try {
+    const res  = await fetch('/api/analyze-github', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ repo_url: url })
+    });
+    const data = await res.json();
+    document.getElementById('analyzeLoader').style.display = 'none';
+    if (data.error) {
+      document.getElementById('analyzeResult').innerHTML =
+        `<div class="alert alert-danger">${data.error}</div>`;
+    } else {
+      const scoreColor = data.project_score >= 8 ? 'var(--success)' :
+                         data.project_score >= 5 ? 'var(--primary)' : 'var(--warning)';
+      const strengths  = data.strengths.map(s => `<li class="text-muted" style="font-size:0.88rem;">${s}</li>`).join('');
+      const improves   = data.improvements.map(s => `<li class="text-muted" style="font-size:0.88rem;">${s}</li>`).join('');
+      const langs      = data.languages.map(l => `<span class="pill pill-primary">${l}</span>`).join(' ');
+
+      document.getElementById('analyzeResult').innerHTML = `
+        <div class="row g-3">
+          <div class="col-md-4 text-center">
+            <div class="score-ring" style="width:120px;height:120px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;color:white;font-weight:bold;margin:0 auto;${data.project_score >= 8 ? 'background:linear-gradient(135deg,#10b981,#059669);' : data.project_score >= 5 ? 'background:linear-gradient(135deg,#3b82f6,#1d4ed8);' : 'background:linear-gradient(135deg,#f59e0b,#d97706);'}">
+              <span style="font-size:3.5rem;line-height:1;font-weight:800;">${data.project_score}</span>
+              <small style="font-size:1rem;opacity:0.9;margin-top:2px;">/10</small>
+            </div>
+            <p class="mt-2 mb-1" style="font-weight:700;font-size:1.05rem;color:var(--text);">${data.repo_name}</p>
+            <div class="d-flex gap-1 flex-wrap justify-content-center">${langs}</div>
+            <p class="text-muted small mt-2">⭐ ${data.stars} Stars &nbsp;|&nbsp; 📦 ${data.commits} Commits</p>
+          </div>
+          <div class="col-md-4">
+            <h6 style="font-weight:700;color:var(--success);font-size:0.9rem;"><i class="bi bi-check-circle-fill me-1"></i>Strengths</h6>
+            <ul class="ps-3">${strengths}</ul>
+          </div>
+          <div class="col-md-4">
+            <h6 style="font-weight:700;color:var(--warning);font-size:0.9rem;"><i class="bi bi-arrow-up-circle-fill me-1"></i>Improvements</h6>
+            <ul class="ps-3">${improves}</ul>
+          </div>
+        </div>
+        <div class="mt-3 d-flex gap-2">
+          <span class="badge bg-primary">README Score: ${data.readme_score}/10</span>
+        </div>`;
+    }
+    document.getElementById('analyzeResult').style.display = 'block';
+  } catch(e) {
+    document.getElementById('analyzeLoader').style.display = 'none';
+    document.getElementById('analyzeResult').innerHTML =
+      `<div class="alert alert-danger">Network error. Please try again.</div>`;
+    document.getElementById('analyzeResult').style.display = 'block';
+  }
+}
+
+function toggleAnalysis(index) {
+  const el = document.getElementById('analysis-' + index);
+  if (el.style.display === 'none') {
+    el.style.display = 'block';
+  } else {
+    el.style.display = 'none';
+  }
+}
+</script>
+{% endblock %}

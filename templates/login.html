@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% block title %}Login – SkillGap AI{% endblock %}
+{% block content %}
+
+<div class="login-shapes-bg" style="position: fixed; top: 0; left: 0; right: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0;" aria-hidden="true">
+  <svg class="shapes-svg" viewBox="0 0 1400 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" style="animation: shapeFloat 8s ease-in-out infinite;">
+    <defs>
+      <radialGradient id="sg1" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#f472b6" stop-opacity="0.28"/>
+        <stop offset="100%" stop-color="#f472b6" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="sg2" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.25"/>
+        <stop offset="100%" stop-color="#38bdf8" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="sg3" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#34d399" stop-opacity="0.22"/>
+        <stop offset="100%" stop-color="#34d399" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="sg4" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#fb923c" stop-opacity="0.22"/>
+        <stop offset="100%" stop-color="#fb923c" stop-opacity="0"/>
+      </radialGradient>
+      <filter id="glow">
+        <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+        <feMerge>
+          <feMergeNode in="coloredBlur"/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+    </defs>
+    <ellipse cx="1300" cy="120" rx="160" ry="160" fill="url(#sg1)" style="animation: shapeGlow 3s ease-in-out infinite;" filter="url(#glow)"/>
+    <ellipse cx="1300" cy="120" rx="110" ry="110" fill="#fce7f3" opacity="0.42" style="animation: shimmerOverlay 4s ease-in-out infinite;"/>
+    <ellipse cx="1268" cy="92" rx="42" ry="28" fill="#fff" opacity="0.28"/>
+    <rect x="1100" y="160" width="75" height="230" rx="37" fill="#7dd3fc" opacity="0.28" transform="rotate(30 1137 275)" style="animation: shapeFloat 6s ease-in-out infinite 0.5s;"/>
+    <ellipse cx="80" cy="680" rx="140" ry="140" fill="url(#sg2)" style="animation: shapeGlow 4s ease-in-out infinite 1s;" filter="url(#glow)"/>
+    <ellipse cx="80" cy="680" rx="95" ry="95" fill="#bae6fd" opacity="0.35"/>
+    <ellipse cx="55" cy="655" rx="34" ry="22" fill="#fff" opacity="0.26"/>
+    <rect x="-80" y="530" width="300" height="80" rx="40" fill="#fdba74" opacity="0.26" transform="rotate(-15 70 570)" style="animation: shapeFloat 7s ease-in-out infinite 1.5s;"/>
+    <ellipse cx="370" cy="490" rx="58" ry="58" fill="url(#sg3)" style="animation: shapeGlow 3.5s ease-in-out infinite 0.8s;" filter="url(#glow)"/>
+    <ellipse cx="370" cy="490" rx="40" ry="40" fill="#a7f3d0" opacity="0.30" style="animation: shimmerOverlay 5s ease-in-out infinite 0.3s;"/>
+    <ellipse cx="354" cy="474" rx="15" ry="10" fill="#fff" opacity="0.33"/>
+    <rect x="1050" y="620" width="340" height="95" rx="47" fill="#a3e635" opacity="0.20" transform="rotate(-20 1220 667)" style="animation: shapeFloat 8s ease-in-out infinite 1.2s;"/>
+    <ellipse cx="1360" cy="820" rx="130" ry="130" fill="url(#sg4)" style="animation: shapeGlow 4.5s ease-in-out infinite 1.5s;" filter="url(#glow)"/>
+    <ellipse cx="1360" cy="820" rx="90" ry="90" fill="#fed7aa" opacity="0.32" style="animation: shimmerOverlay 6s ease-in-out infinite 0.6s;"/>
+    <ellipse cx="200" cy="300" rx="220" ry="80" fill="#e879f9" opacity="0.10" style="animation: shimmerOverlay 5s ease-in-out infinite;"/>
+  </svg>
+</div>
+
+<div class="auth-wrapper container py-4" style="position: relative; z-index: 1;">
+  <div class="row justify-content-center w-100">
+    <div class="col-lg-9">
+      <div class="auth-card card animate-slide-up">
+        <div class="row g-0">
+          <div class="col-md-5 auth-left d-flex flex-column justify-content-center">
+            <div class="mb-3 animate-float"><i class="bi bi-cpu-fill fs-2 text-warning"></i></div>
+            <h2 class="animate-fade-in">Welcome Back!</h2>
+            <p class="opacity-75 mb-4 animate-fade-in-delay">Continue your interview practice journey and track your progress.</p>
+            <div class="auth-feature animate-slide-in-left"><i class="bi bi-check-circle-fill text-warning"></i> AI-powered answer analysis</div>
+            <div class="auth-feature animate-slide-in-left-delay-1"><i class="bi bi-check-circle-fill text-warning"></i> Voice &amp; text input support</div>
+            <div class="auth-feature animate-slide-in-left-delay-2"><i class="bi bi-check-circle-fill text-warning"></i> Detailed skill gap reports</div>
+            <div class="auth-feature animate-slide-in-left-delay-3"><i class="bi bi-check-circle-fill text-warning"></i> Personalised job recommendations</div>
+          </div>
+          <div class="col-md-7 auth-right">
+            <h4 class="fw-bold mb-1 animate-fade-in">Sign In</h4>
+            <p class="text-muted small mb-4 animate-fade-in-delay">Enter your credentials to access your account</p>
+            <form method="POST">
+              <div class="mb-3 animate-slide-in-right">
+                <label class="form-label fw-semibold">Email Address</label>
+                <div class="input-group input-group-hover">
+                  <span class="input-group-text"><i class="bi bi-envelope-fill text-primary"></i></span>
+                  <input type="email" name="email" class="form-control form-control-enhanced" placeholder="you@example.com" required/>
+                </div>
+              </div>
+              <div class="mb-4 animate-slide-in-right-delay">
+                <label class="form-label fw-semibold">Password</label>
+                <div class="input-group input-group-hover">
+                  <span class="input-group-text"><i class="bi bi-lock-fill text-primary"></i></span>
+                  <input type="password" name="password" class="form-control form-control-enhanced" placeholder="Enter your password" required/>
+                </div>
+              </div>
+              <button type="submit" class="btn btn-primary w-100 py-2 fw-bold btn-enhanced animate-pulse-hover">
+                <i class="bi bi-box-arrow-in-right me-2"></i>Sign In
+              </button>
+            </form>
+            <hr class="my-3 animate-fade-in"/>
+            <p class="text-center text-muted small mb-0 animate-fade-in">
+              Don't have an account? <a href="{{ url_for('register') }}" class="text-primary fw-semibold link-enhanced">Create one free</a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

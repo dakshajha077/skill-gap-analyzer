@@ -1,0 +1,648 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard – SkillGap AI{% endblock %}
+{% block body_class %}dashboard-bg{% endblock %}
+{% block content %}
+
+<div class="dashboard-shapes-bg" style="position: fixed; top: 0; left: 0; right: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0;" aria-hidden="true">
+  <svg class="shapes-svg" viewBox="0 0 1400 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" style="animation: shapeFloat 8s ease-in-out infinite;">
+    <defs>
+      <radialGradient id="sg1" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#f472b6" stop-opacity="0.28"/>
+        <stop offset="100%" stop-color="#f472b6" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="sg2" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.25"/>
+        <stop offset="100%" stop-color="#38bdf8" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="sg3" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#34d399" stop-opacity="0.22"/>
+        <stop offset="100%" stop-color="#34d399" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="sg4" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#fb923c" stop-opacity="0.22"/>
+        <stop offset="100%" stop-color="#fb923c" stop-opacity="0"/>
+      </radialGradient>
+      <filter id="glow">
+        <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+        <feMerge>
+          <feMergeNode in="coloredBlur"/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+    </defs>
+    <ellipse cx="1300" cy="120" rx="160" ry="160" fill="url(#sg1)" style="animation: shapeGlow 3s ease-in-out infinite;" filter="url(#glow)"/>
+    <ellipse cx="1300" cy="120" rx="110" ry="110" fill="#fce7f3" opacity="0.42" style="animation: shimmerOverlay 4s ease-in-out infinite;"/>
+    <ellipse cx="1268" cy="92" rx="42" ry="28" fill="#fff" opacity="0.28"/>
+    <rect x="1100" y="160" width="75" height="230" rx="37" fill="#7dd3fc" opacity="0.28" transform="rotate(30 1137 275)" style="animation: shapeFloat 6s ease-in-out infinite 0.5s;"/>
+    <ellipse cx="80" cy="680" rx="140" ry="140" fill="url(#sg2)" style="animation: shapeGlow 4s ease-in-out infinite 1s;" filter="url(#glow)"/>
+    <ellipse cx="80" cy="680" rx="95" ry="95" fill="#bae6fd" opacity="0.35"/>
+    <ellipse cx="55" cy="655" rx="34" ry="22" fill="#fff" opacity="0.26"/>
+    <rect x="-80" y="530" width="300" height="80" rx="40" fill="#fdba74" opacity="0.26" transform="rotate(-15 70 570)" style="animation: shapeFloat 7s ease-in-out infinite 1.5s;"/>
+    <ellipse cx="370" cy="490" rx="58" ry="58" fill="url(#sg3)" style="animation: shapeGlow 3.5s ease-in-out infinite 0.8s;" filter="url(#glow)"/>
+    <ellipse cx="370" cy="490" rx="40" ry="40" fill="#a7f3d0" opacity="0.30" style="animation: shimmerOverlay 5s ease-in-out infinite 0.3s;"/>
+    <ellipse cx="354" cy="474" rx="15" ry="10" fill="#fff" opacity="0.33"/>
+    <rect x="1050" y="620" width="340" height="95" rx="47" fill="#a3e635" opacity="0.20" transform="rotate(-20 1220 667)" style="animation: shapeFloat 8s ease-in-out infinite 1.2s;"/>
+    <ellipse cx="1360" cy="820" rx="130" ry="130" fill="url(#sg4)" style="animation: shapeGlow 4.5s ease-in-out infinite 1.5s;" filter="url(#glow)"/>
+    <ellipse cx="1360" cy="820" rx="90" ry="90" fill="#fed7aa" opacity="0.32" style="animation: shimmerOverlay 6s ease-in-out infinite 0.6s;"/>
+    <ellipse cx="200" cy="300" rx="220" ry="80" fill="#e879f9" opacity="0.10" style="animation: shimmerOverlay 5s ease-in-out infinite;"/>
+  </svg>
+</div>
+
+<div class="container" style="padding:2.5rem 0 4rem; position: relative; z-index: 1;">
+
+  <div class="d-flex align-items-center justify-content-between mb-5 flex-wrap gap-3">
+    <div class="dashboard-page-header">
+      <h2 class="dashboard-page-title" style="font-size:2rem;font-weight:800;margin-bottom:4px;">My Dashboard</h2>
+      <p class="dashboard-page-subtitle text-muted mb-0">Track your interview performance and skill analyses</p>
+    </div>
+    <div class="d-flex gap-2 flex-wrap">
+      <a href="{{ url_for('github_analyzer') }}" class="btn btn-outline-primary fw-bold">
+        <i class="bi bi-github me-2"></i>GitHub Analyzer
+      </a>
+      <a href="{{ url_for('skill_analysis') }}" class="btn btn-primary fw-bold">
+        <i class="bi bi-bar-chart-fill me-2"></i>Skill Analysis
+      </a>
+      <a href="{{ url_for('select_category') }}" class="btn btn-primary fw-bold" style="background:linear-gradient(135deg,#8B5CF6,#6D28D9);border:none;">
+        <i class="bi bi-mic-fill me-2"></i>New Interview
+      </a>
+      <a href="{{ url_for('devices') }}" class="btn btn-outline-secondary fw-bold manage-devices-btn">
+        <i class="bi bi-shield-check me-2"></i>Manage Devices
+      </a>
+    </div>
+  </div>
+
+  <!-- Feature 5: Badge + Streak Banner -->
+  {% if streak_info %}
+  <div class="card p-4 mb-4" style="background:linear-gradient(135deg,#2563eb,#1d4ed8) !important;border:none !important;color:white;">
+    <div class="row align-items-center g-3">
+      <div class="col-auto">
+        <div style="width:64px;height:64px;border-radius:50%;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;">
+          <i class="{{ streak_info.badge.icon }}" style="font-size:1.8rem;color:{{ streak_info.badge.color }};filter:drop-shadow(0 0 4px rgba(255,255,255,0.5));"></i>
+        </div>
+      </div>
+      <div class="col">
+        <div style="font-size:1.1rem;font-weight:800;color:#fff;">
+          {{ streak_info.badge.label }} Badge
+          <span class="ms-2" style="font-size:0.8rem;background:rgba(255,255,255,0.2);padding:2px 10px;border-radius:50px;">
+            🔥 {{ streak_info.login_streak }}-day streak
+          </span>
+        </div>
+        <div style="color:rgba(255,255,255,0.8);font-size:0.85rem;margin-top:2px;">
+          Total Score: {{ streak_info.total_score }} pts
+          {% if streak_info.next_badge.next %}
+            &nbsp;·&nbsp; {{ streak_info.next_badge.needed }} pts to <strong>{{ streak_info.next_badge.next }}</strong>
+          {% else %}
+            &nbsp;·&nbsp; 🏆 Maximum badge achieved!
+          {% endif %}
+        </div>
+        <!-- Progress bar to next badge -->
+        {% if streak_info.next_badge.next %}
+        <div style="background:rgba(255,255,255,0.2);border-radius:50px;height:6px;margin-top:8px;overflow:hidden;">
+          <div style="height:100%;background:rgba(255,255,255,0.85);border-radius:50px;width:{{ streak_info.next_badge.progress }}%;transition:width 1s;"></div>
+        </div>
+        <div style="color:rgba(255,255,255,0.6);font-size:0.72rem;margin-top:4px;">
+          {{ streak_info.next_badge.progress }}% toward {{ streak_info.next_badge.next }}
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Stat Cards -->
+  <div class="row g-3 mb-5">
+    <div class="col-6 col-md-3">
+      <div class="stat-card" style="background:linear-gradient(135deg,#4f46e5,#6366f1);">
+        <p class="mb-1 small opacity-75">Sessions Done</p>
+        <h2>{{ total_sessions }}</h2>
+        <i class="bi bi-collection-fill position-absolute" style="right:16px;bottom:16px;font-size:2rem;opacity:0.2;"></i>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="stat-card" style="background:linear-gradient(135deg,#10b981,#059669);">
+        <p class="mb-1 small opacity-75">Avg Score</p>
+        <h2>{{ avg_score }}</h2>
+        <i class="bi bi-graph-up-arrow position-absolute" style="right:16px;bottom:16px;font-size:2rem;opacity:0.2;"></i>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="stat-card" style="background:linear-gradient(135deg,#f59e0b,#d97706);">
+        <p class="mb-1 small opacity-75">Good Answers</p>
+        <h2>{{ cat_counts.get('Good Answer', 0) }}</h2>
+        <i class="bi bi-hand-thumbs-up-fill position-absolute" style="right:16px;bottom:16px;font-size:2rem;opacity:0.2;"></i>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="stat-card" style="background:linear-gradient(135deg,#8B5CF6,#6D28D9);">
+        <p class="mb-1 small opacity-75">Skill Analyses</p>
+        <h2>{{ skill_analyses|length }}</h2>
+        <i class="bi bi-bar-chart-fill position-absolute" style="right:16px;bottom:16px;font-size:2rem;opacity:0.2;"></i>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-lg-7">
+      <div class="card p-4">
+        <h6 style="font-weight:700;color:var(--text);margin-bottom:4px;">
+          <i class="bi bi-clock-history me-2 text-primary"></i>Recent Interview Sessions
+        </h6>
+        <p class="text-muted small mb-3">Click any row to open the full breakdown, or delete a session from the Actions column.</p>
+        {% if int_sessions %}
+        <div class="recent-live-chart mb-4">
+          <div class="d-flex align-items-start justify-content-between flex-wrap gap-3 mb-3">
+            <div>
+              <span class="recent-live-caption">Recent Interview Pulse</span>
+              <h5 class="recent-live-title mb-1" id="recent-live-session-title">Latest Session</h5>
+              <p class="text-muted small mb-0" id="recent-live-session-meta">Hover a session row to preview its performance.</p>
+            </div>
+            <span class="recent-live-badge">
+              <i class="bi bi-broadcast-pin me-1"></i>Live Preview
+            </span>
+          </div>
+
+          <div class="row g-3 align-items-stretch">
+            <div class="col-md-5">
+              <div class="recent-live-spotlight">
+                <div class="recent-live-glow glow-one"></div>
+                <div class="recent-live-glow glow-two"></div>
+                <span class="recent-live-overline">Average Score</span>
+                <div class="recent-live-score">
+                  <span id="recent-live-score">0</span>
+                  <small>/100</small>
+                </div>
+                <p class="recent-live-performance" id="recent-live-performance">Loading</p>
+                <div class="recent-live-kickers">
+                  <div>
+                    <span>Good Ratio</span>
+                    <strong id="recent-live-good-ratio">0%</strong>
+                  </div>
+                  <div>
+                    <span>Completion</span>
+                    <strong id="recent-live-completion">0%</strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-7">
+              <div class="recent-bars-grid">
+                <div class="recent-bar-card">
+                  <span>Good Answers</span>
+                  <strong id="recent-live-good">0</strong>
+                  <div class="recent-bar-track"><div class="recent-bar-fill good" id="recent-live-good-fill"></div></div>
+                </div>
+                <div class="recent-bar-card">
+                  <span>Needs Work</span>
+                  <strong id="recent-live-needs-work">0</strong>
+                  <div class="recent-bar-track"><div class="recent-bar-fill needs-work" id="recent-live-needs-work-fill"></div></div>
+                </div>
+                <div class="recent-bar-card">
+                  <span>Total Questions</span>
+                  <strong id="recent-live-total">0</strong>
+                  <div class="recent-bar-track"><div class="recent-bar-fill total" id="recent-live-total-fill"></div></div>
+                </div>
+                <div class="recent-bar-card">
+                  <span>Avg Score</span>
+                  <strong id="recent-live-avg-count">0</strong>
+                  <div class="recent-bar-track"><div class="recent-bar-fill avg" id="recent-live-avg-fill"></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="overflow-x:auto;">
+          <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+              <tr>
+                <th class="text-muted small fw-semibold">#</th>
+                <th class="text-muted small fw-semibold">Category</th>
+                <th class="text-muted small fw-semibold">Avg Score</th>
+                <th class="text-muted small fw-semibold">Performance</th>
+                <th class="text-muted small fw-semibold">Date</th>
+                <th class="text-muted small fw-semibold text-end">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for s in int_sessions %}
+              <tr class="recent-session-row" data-session-index="{{ loop.index0 }}" onclick="window.location='{{ url_for('session_detail', session_id=s.id) }}'" style="cursor:pointer;">
+                <td class="text-muted small">{{ loop.index }}</td>
+                <td>
+                  {% set info = categories.get(s.category, {}) %}
+                  <span class="badge text-{{ info.color or 'secondary' }} px-2 py-1" style="background-color: #ffffff; border:1px solid #e5e7eb;">
+                    <i class="bi {{ info.icon or 'bi-circle' }} me-1"></i>{{ s.category }}
+                  </span>
+                </td>
+                <td style="font-weight:700;color:var(--text);">{{ s.avg_score|round(1) }}/100</td>
+                <td>
+                  {% if s.avg_score >= 80 %}<span class="badge bg-success">Excellent</span>
+                  {% elif s.avg_score >= 65 %}<span class="badge bg-primary">Good</span>
+                  {% elif s.avg_score >= 50 %}<span class="badge bg-warning text-dark">Average</span>
+                  {% else %}<span class="badge bg-danger">Needs Work</span>{% endif %}
+                </td>
+                <td class="text-muted small">{{ s.created_at[:10] }}</td>
+                <td class="text-end">
+                  <button type="button" class="btn btn-sm btn-outline-danger" onclick="event.stopPropagation(); deleteSession({{ s.id }});">
+                    <i class="bi bi-trash3"></i>
+                  </button>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        <p class="text-muted small mt-2 mb-0"><i class="bi bi-info-circle me-1"></i>Click any row to view full session details</p>
+        {% else %}
+        <div class="text-center" style="padding:2.5rem 0;">
+          <i class="bi bi-mic text-primary" style="font-size:2.5rem;opacity:0.2;"></i>
+          <p class="text-muted mt-3">No interview sessions yet.</p>
+          <a href="{{ url_for('select_category') }}" class="btn btn-primary btn-sm">Start Interview</a>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="col-lg-5">
+      <div class="card p-4 mb-4">
+        <h6 style="font-weight:700;color:var(--text);margin-bottom:1.2rem;">
+          <i class="bi bi-bar-chart-fill me-2" style="color:#8B5CF6;"></i>Recent Skill Analyses
+        </h6>
+        {% if skill_analyses %}
+          {% for sa in skill_analyses %}
+          <div class="d-flex align-items-center justify-content-between mb-3">
+            <div>
+              <div style="font-size:0.88rem;font-weight:600;color:var(--text);">{{ sa.job_role }}</div>
+              <div class="text-muted" style="font-size:0.78rem;">{{ sa.created_at[:10] }}</div>
+            </div>
+            <div class="text-end">
+              <div style="font-size:1.1rem;font-weight:800;color:{% if sa.overall_score >= 70 %}var(--success){% elif sa.overall_score >= 50 %}var(--warning){% else %}var(--danger){% endif %};">
+                {{ sa.overall_score }}%
+              </div>
+              <a href="{{ url_for('download_skill_report', analysis_id=sa.id) }}" class="text-primary" style="font-size:0.75rem;">
+                <i class="bi bi-download me-1"></i>PDF
+              </a>
+            </div>
+          </div>
+          {% endfor %}
+          <a href="{{ url_for('skill_analysis') }}" class="btn btn-primary btn-sm w-100 mt-1">New Analysis</a>
+        {% else %}
+          <div class="text-center" style="padding:1.5rem 0;">
+            <i class="bi bi-bar-chart text-primary" style="font-size:2rem;opacity:0.2;"></i>
+            <p class="text-muted my-2">No skill analyses yet.</p>
+            <a href="{{ url_for('skill_analysis') }}" class="btn btn-primary btn-sm">Analyse Skills</a>
+          </div>
+        {% endif %}
+      </div>
+
+      <div class="card p-4">
+        <h6 style="font-weight:700;color:var(--text);margin-bottom:1.2rem;">
+          <i class="bi bi-pie-chart-fill me-2 text-primary"></i>All Answer Categories
+        </h6>
+        {% set total_ans = all_answers|length %}
+        {% if total_ans > 0 %}
+          {% for cat, count in cat_counts.items() %}
+            {% set pct = (count / total_ans * 100)|int %}
+            {% if cat == 'Good Answer' %}{% set col='success' %}
+            {% elif cat in ('Technical Weakness','Conceptual Weakness','Weak Response') %}{% set col='warning' %}
+            {% elif cat == 'Communication Weakness' %}{% set col='primary' %}
+            {% else %}{% set col='danger' %}{% endif %}
+            <div class="mb-3">
+              <div class="d-flex justify-content-between mb-1" style="font-size:0.8rem;">
+                <span style="color:var(--text);">{{ cat }}</span>
+                <span class="text-muted">{{ count }} ({{ pct }}%)</span>
+              </div>
+              <div class="progress-dark">
+                <div class="progress-fill {{ col }}" style="width:{{ pct }}%;"></div>
+              </div>
+            </div>
+          {% endfor %}
+        {% else %}
+          <p class="text-muted text-center" style="font-size:0.88rem;padding:1rem 0;">No answers yet.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Feature 1: Dashboard Chatbot -->
+  <div class="mt-4">
+    {% set chatbot_mode = 'dashboard' %}
+    {% set chatbot_context_json = '{"total_sessions":' + total_sessions|string + ',"avg_score":' + avg_score|string + ',"good_answers":' + cat_counts.get("Good Answer",0)|string + ',"skill_analyses":' + skill_analyses|length|string + '}' %}
+    {% set chatbot_title = '🤖 AI Dashboard Coach — Performance Analysis & Tips' %}
+    {% include 'chatbot_component.html' %}
+  </div>
+
+</div>
+
+<style>
+  .recent-live-chart {
+    position: relative;
+  }
+
+  .recent-live-caption {
+    display: inline-block;
+    margin-bottom: 0.25rem;
+    color: #4338ca;
+    font-size: 0.76rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .recent-live-title {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--text);
+  }
+
+  .recent-live-badge {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    padding: 0.45rem 0.85rem;
+    background: rgba(79, 70, 229, 0.08);
+    color: #4338ca;
+    font-size: 0.79rem;
+    font-weight: 700;
+  }
+
+  .recent-live-spotlight {
+    position: relative;
+    overflow: hidden;
+    height: 100%;
+    min-height: 248px;
+    border-radius: 24px;
+    padding: 1.3rem;
+    background: linear-gradient(160deg, #0f172a, #1d4ed8 80%, #38bdf8);
+    color: #fff;
+  }
+
+  .recent-live-overline {
+    position: relative;
+    z-index: 1;
+    display: inline-block;
+    color: rgba(255, 255, 255, 0.72);
+    font-size: 0.74rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .recent-live-score {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: baseline;
+    gap: 0.3rem;
+    margin-top: 0.95rem;
+  }
+
+  .recent-live-score span {
+    font-size: 3.6rem;
+    font-weight: 800;
+    line-height: 1;
+  }
+
+  .recent-live-score small {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.95rem;
+  }
+
+  .recent-live-performance {
+    position: relative;
+    z-index: 1;
+    margin: 0.5rem 0 0;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.95);
+  }
+
+  .recent-live-kickers {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.8rem;
+    margin-top: 1.25rem;
+  }
+
+  .recent-live-kickers div {
+    border-radius: 18px;
+    padding: 0.9rem;
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .recent-live-kickers span {
+    display: block;
+    color: rgba(255, 255, 255, 0.68);
+    font-size: 0.72rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .recent-live-kickers strong {
+    font-size: 1.12rem;
+    font-weight: 800;
+  }
+
+  .recent-live-glow {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(12px);
+  }
+
+  .glow-one {
+    width: 160px;
+    height: 160px;
+    top: -36px;
+    right: -28px;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.22), transparent 65%);
+  }
+
+  .glow-two {
+    width: 120px;
+    height: 120px;
+    bottom: -26px;
+    left: -14px;
+    background: radial-gradient(circle, rgba(56, 189, 248, 0.32), transparent 65%);
+  }
+
+  .recent-bars-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.9rem;
+    height: 100%;
+  }
+
+  .recent-bar-card {
+    padding: 1rem;
+    border-radius: 20px;
+    background: linear-gradient(135deg, rgba(124, 58, 237, 0.92), rgba(79, 70, 229, 0.92));
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    box-shadow: 0 18px 40px rgba(79, 70, 229, 0.18);
+  }
+
+  .recent-bar-card span {
+    display: block;
+    color: rgba(255, 255, 255, 0.78);
+    font-size: 0.78rem;
+    font-weight: 700;
+    margin-bottom: 0.42rem;
+  }
+
+  .recent-bar-card strong {
+    display: block;
+    color: #ffffff;
+    font-size: 1.6rem;
+    font-weight: 800;
+    margin-bottom: 0.8rem;
+  }
+
+  .recent-bar-track {
+    height: 11px;
+    border-radius: 999px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.22);
+  }
+
+  .recent-bar-fill {
+    height: 100%;
+    width: 0;
+    border-radius: inherit;
+    transition: width 0.95s cubic-bezier(.22, 1, .36, 1);
+  }
+
+  .recent-bar-fill.good {
+    background: linear-gradient(90deg, #34d399, #059669);
+  }
+
+  .recent-bar-fill.needs-work {
+    background: linear-gradient(90deg, #fb7185, #ef4444);
+  }
+
+  .recent-bar-fill.total {
+    background: linear-gradient(90deg, #818cf8, #4f46e5);
+  }
+
+  .recent-bar-fill.avg {
+    background: linear-gradient(90deg, #fbbf24, #f59e0b);
+  }
+
+  .recent-session-row.active-row {
+    --bs-table-bg: rgba(79, 70, 229, 0.06);
+  }
+
+  @media (max-width: 767px) {
+    .recent-bars-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+async function deleteSession(sessionId) {
+  if (!confirm(`Delete Session #${sessionId}? This cannot be undone.`)) return;
+
+  try {
+    const response = await fetch(`/api/sessions/${sessionId}/delete`, { method: 'POST' });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok || !data.success) {
+      throw new Error(data.error || 'Unable to delete session.');
+    }
+    window.location.reload();
+  } catch (error) {
+    alert(error.message);
+  }
+}
+
+function animateDashboardNumber(element, target) {
+  const startValue = parseFloat(element.dataset.value || '0');
+  const duration = 780;
+  const startTime = performance.now();
+
+  function step(now) {
+    const progress = Math.min((now - startTime) / duration, 1);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    const current = startValue + (target - startValue) * eased;
+    const value = Number.isInteger(target) ? Math.round(current) : current.toFixed(1);
+    element.textContent = value;
+
+    if (progress < 1) {
+      requestAnimationFrame(step);
+    } else {
+      element.textContent = target;
+      element.dataset.value = target;
+    }
+  }
+
+  requestAnimationFrame(step);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const recentLiveTitle = document.getElementById('recent-live-session-title');
+  const recentLiveMeta = document.getElementById('recent-live-session-meta');
+  if (!recentLiveTitle || !recentLiveMeta) return;
+
+  const recentSessionMetrics = {{ recent_session_metrics|tojson }};
+  if (!recentSessionMetrics.length) return;
+
+  const rows = Array.from(document.querySelectorAll('.recent-session-row'));
+  let activeIndex = 0;
+
+  function getPerformanceLabel(score) {
+    if (score >= 80) return 'Excellent';
+    if (score >= 65) return 'Good';
+    if (score >= 50) return 'Average';
+    return 'Needs Work';
+  }
+
+  function highlightRow(index) {
+    rows.forEach((row, rowIndex) => row.classList.toggle('active-row', rowIndex === index));
+  }
+
+  function renderSession(index) {
+    const payload = recentSessionMetrics[index];
+    if (!payload) return;
+
+    const totalGoal = Math.max(payload.total_questions || 0, 10);
+    const goodRatio = payload.total_questions ? Math.round((payload.good_answers / payload.total_questions) * 100) : 0;
+    const needsWorkRatio = payload.total_questions ? Math.round((payload.needs_work / payload.total_questions) * 100) : 0;
+    const completionRatio = Math.round((payload.total_questions / totalGoal) * 100);
+
+    recentLiveTitle.textContent = `${payload.category} Interview`;
+    recentLiveMeta.textContent = `Session #${payload.id} • ${payload.created_at.slice(0, 10)}`;
+    document.getElementById('recent-live-performance').textContent = getPerformanceLabel(payload.avg_score);
+    document.getElementById('recent-live-good-ratio').textContent = `${goodRatio}%`;
+    document.getElementById('recent-live-completion').textContent = `${completionRatio}%`;
+
+    animateDashboardNumber(document.getElementById('recent-live-score'), payload.avg_score);
+    animateDashboardNumber(document.getElementById('recent-live-good'), payload.good_answers);
+    animateDashboardNumber(document.getElementById('recent-live-needs-work'), payload.needs_work);
+    animateDashboardNumber(document.getElementById('recent-live-total'), payload.total_questions);
+    animateDashboardNumber(document.getElementById('recent-live-avg-count'), payload.avg_score);
+
+    document.getElementById('recent-live-good-fill').style.width = `${goodRatio}%`;
+    document.getElementById('recent-live-needs-work-fill').style.width = `${needsWorkRatio}%`;
+    document.getElementById('recent-live-total-fill').style.width = `${completionRatio}%`;
+    document.getElementById('recent-live-avg-fill').style.width = `${Math.max(0, Math.min(100, payload.avg_score))}%`;
+
+    highlightRow(index);
+  }
+
+  renderSession(0);
+
+  rows.forEach((row) => {
+    const index = Number(row.dataset.sessionIndex);
+    if (Number.isNaN(index)) return;
+    row.addEventListener('mouseenter', () => {
+      activeIndex = index;
+      renderSession(activeIndex);
+    });
+    row.addEventListener('focus', () => {
+      activeIndex = index;
+      renderSession(activeIndex);
+    });
+  });
+});
+</script>
+{% endblock %}

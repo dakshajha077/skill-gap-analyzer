@@ -1,0 +1,916 @@
+{% extends 'base.html' %}
+{% block title %}Session Detail – SkillGap AI{% endblock %}
+{% block body_class %}dashboard-bg{% endblock %}
+{% block content %}
+
+<div class="session-detail-shapes-bg" style="position: fixed; top: 0; left: 0; right: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0;" aria-hidden="true">
+  <svg class="shapes-svg" viewBox="0 0 1400 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" style="animation: shapeFloat 8s ease-in-out infinite;">
+    <defs>
+      <radialGradient id="sg1" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#f472b6" stop-opacity="0.28"/>
+        <stop offset="100%" stop-color="#f472b6" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="sg2" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.25"/>
+        <stop offset="100%" stop-color="#38bdf8" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="sg3" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#34d399" stop-opacity="0.22"/>
+        <stop offset="100%" stop-color="#34d399" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="sg4" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#fb923c" stop-opacity="0.22"/>
+        <stop offset="100%" stop-color="#fb923c" stop-opacity="0"/>
+      </radialGradient>
+      <filter id="glow">
+        <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+        <feMerge>
+          <feMergeNode in="coloredBlur"/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+    </defs>
+    <ellipse cx="1300" cy="120" rx="160" ry="160" fill="url(#sg1)" style="animation: shapeGlow 3s ease-in-out infinite;" filter="url(#glow)"/>
+    <ellipse cx="1300" cy="120" rx="110" ry="110" fill="#fce7f3" opacity="0.42" style="animation: shimmerOverlay 4s ease-in-out infinite;"/>
+    <ellipse cx="1268" cy="92" rx="42" ry="28" fill="#fff" opacity="0.28"/>
+    <rect x="1100" y="160" width="75" height="230" rx="37" fill="#7dd3fc" opacity="0.28" transform="rotate(30 1137 275)" style="animation: shapeFloat 6s ease-in-out infinite 0.5s;"/>
+    <ellipse cx="80" cy="680" rx="140" ry="140" fill="url(#sg2)" style="animation: shapeGlow 4s ease-in-out infinite 1s;" filter="url(#glow)"/>
+    <ellipse cx="80" cy="680" rx="95" ry="95" fill="#bae6fd" opacity="0.35"/>
+    <ellipse cx="55" cy="655" rx="34" ry="22" fill="#fff" opacity="0.26"/>
+    <rect x="-80" y="530" width="300" height="80" rx="40" fill="#fdba74" opacity="0.26" transform="rotate(-15 70 570)" style="animation: shapeFloat 7s ease-in-out infinite 1.5s;"/>
+    <ellipse cx="370" cy="490" rx="58" ry="58" fill="url(#sg3)" style="animation: shapeGlow 3.5s ease-in-out infinite 0.8s;" filter="url(#glow)"/>
+    <ellipse cx="370" cy="490" rx="40" ry="40" fill="#a7f3d0" opacity="0.30" style="animation: shimmerOverlay 5s ease-in-out infinite 0.3s;"/>
+    <ellipse cx="354" cy="474" rx="15" ry="10" fill="#fff" opacity="0.33"/>
+    <rect x="1050" y="620" width="340" height="95" rx="47" fill="#a3e635" opacity="0.20" transform="rotate(-20 1220 667)" style="animation: shapeFloat 8s ease-in-out infinite 1.2s;"/>
+    <ellipse cx="1360" cy="820" rx="130" ry="130" fill="url(#sg4)" style="animation: shapeGlow 4.5s ease-in-out infinite 1.5s;" filter="url(#glow)"/>
+    <ellipse cx="1360" cy="820" rx="90" ry="90" fill="#fed7aa" opacity="0.32" style="animation: shimmerOverlay 6s ease-in-out infinite 0.6s;"/>
+    <ellipse cx="200" cy="300" rx="220" ry="80" fill="#e879f9" opacity="0.10" style="animation: shimmerOverlay 5s ease-in-out infinite;"/>
+  </svg>
+</div>
+
+<div class="container" style="padding:2.5rem 0 4rem; position: relative; z-index: 1;">
+
+  <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-4">
+    <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary btn-sm px-3 back-dashboard-btn">
+      <i class="bi bi-arrow-left me-2"></i>Back to Dashboard
+    </a>
+    <button type="button" class="btn btn-outline-danger btn-sm px-3 delete-session-btn" onclick="deleteThisSession()">
+      <i class="bi bi-trash3 me-2"></i>Delete Session
+    </button>
+  </div>
+
+  <div style="text-align: center; margin-bottom: 2rem;">
+    <span class="badge bg-{{ category_info.color }} fs-6 px-3 py-2 mb-3">
+      <i class="bi {{ category_info.icon }} me-1"></i>{{ sess.category }} Interview
+    </span>
+    <h2 style="font-size:2rem;font-weight:800;color:var(--warning);margin-bottom:0.5rem;">
+      Session #{{ sess.id }} — Detailed Analysis
+    </h2>
+    <p class="small mb-3" style="color:#fff;opacity:0.9;">{{ sess.created_at[:16] }}</p>
+    
+    <!-- Score Display - Large and Centered -->
+    <div class="d-flex flex-column align-items-center justify-content-center mt-3 mb-4">
+      <div class="score-ring {% if avg_score >= 80 %}score-excellent{% elif avg_score >= 65 %}score-good{% elif avg_score >= 50 %}score-average{% else %}score-poor{% endif %}" style="width: 140px; height: 140px;">
+        <span style="font-size: 3.5rem; font-weight: 800; line-height: 1;">{{ avg_score|int }}</span>
+        <small style="font-size: 0.9rem; font-weight: 500; opacity: 0.8; margin-top: 4px;">/ 100</small>
+      </div>
+      <h4 style="font-weight:700;margin-top:1rem;margin-bottom:0.25rem;color:#fff;font-size:1.3rem;">{{ performance_label }}</h4>
+      <p style="color:#fff;margin:0;font-size:0.95rem;opacity:0.92;">Overall Performance</p>
+    </div>
+  </div>
+
+  <div class="row g-3 mb-4">
+    <div class="col-6 col-md-3">
+      <div style="background:linear-gradient(135deg,#10b981,#059669);color:white;border-radius:16px;padding:1.2rem;text-align:center;">
+        <h2 style="font-size:2rem;font-weight:800;margin:0;">{{ good_answers|length }}</h2>
+        <p style="font-size:0.82rem;margin:0;opacity:0.9;">Good Answers</p>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div style="background:linear-gradient(135deg,#ef4444,#dc2626);color:white;border-radius:16px;padding:1.2rem;text-align:center;">
+        <h2 style="font-size:2rem;font-weight:800;margin:0;">{{ needs_work|length }}</h2>
+        <p style="font-size:0.82rem;margin:0;opacity:0.9;">Needs Work</p>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div style="background:linear-gradient(135deg,#4f46e5,#6366f1);color:white;border-radius:16px;padding:1.2rem;text-align:center;">
+        <h2 style="font-size:2rem;font-weight:800;margin:0;">{{ total }}</h2>
+        <p style="font-size:0.82rem;margin:0;opacity:0.9;">Total Questions</p>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div style="background:linear-gradient(135deg,#f59e0b,#d97706);color:white;border-radius:16px;padding:1.2rem;text-align:center;">
+        <h2 style="font-size:2rem;font-weight:800;margin:0;">{{ avg_score }}</h2>
+        <p style="font-size:0.82rem;margin:0;opacity:0.9;">Avg Score</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card session-live-graph-card p-4 mb-4">
+    <div class="d-flex align-items-start justify-content-between flex-wrap gap-3 mb-4">
+      <div>
+        <h5 style="font-weight:800;color:var(--text);margin-bottom:0.3rem;">
+          <i class="bi bi-graph-up-arrow me-2 text-primary"></i>Previous Session Statistics
+        </h5>
+        <p class="text-muted mb-0">A dynamic visual snapshot of this session's performance across the key interview metrics.</p>
+      </div>
+      <span class="session-live-chip">
+        <i class="bi bi-activity me-1"></i>Dynamic Graph
+      </span>
+    </div>
+
+    <div class="row g-4 align-items-center">
+      <div class="col-lg-8">
+        <div class="session-graph-shell">
+          <svg class="session-graph-svg" viewBox="0 0 760 320" preserveAspectRatio="none" aria-hidden="true">
+            <defs>
+              <linearGradient id="sessionAreaFill" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="rgba(59,130,246,0.28)"/>
+                <stop offset="100%" stop-color="rgba(139,92,246,0.14)"/>
+              </linearGradient>
+              <linearGradient id="sessionLineStroke" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#38bdf8"/>
+                <stop offset="50%" stop-color="#4f46e5"/>
+                <stop offset="100%" stop-color="#8b5cf6"/>
+              </linearGradient>
+            </defs>
+
+            <g id="session-grid-lines">
+              <line x1="54" y1="48" x2="706" y2="48"></line>
+              <line x1="54" y1="104" x2="706" y2="104"></line>
+              <line x1="54" y1="160" x2="706" y2="160"></line>
+              <line x1="54" y1="216" x2="706" y2="216"></line>
+              <line x1="54" y1="272" x2="706" y2="272"></line>
+            </g>
+
+            <path id="session-area-path" class="session-area-path" d=""></path>
+            <path id="session-line-path" class="session-line-path" d=""></path>
+            <g id="session-point-layer"></g>
+          </svg>
+        </div>
+      </div>
+
+      <div class="col-lg-4">
+        <div class="session-metric-stack">
+          <div class="session-metric-card good">
+            <span>Good Answers</span>
+            <strong id="session-good-value">0</strong>
+            <small id="session-good-meta">0% of total</small>
+          </div>
+          <div class="session-metric-card needs-work">
+            <span>Needs Work</span>
+            <strong id="session-needs-work-value">0</strong>
+            <small id="session-needs-work-meta">0% of total</small>
+          </div>
+          <div class="session-metric-card total">
+            <span>Total Questions</span>
+            <strong id="session-total-value">0</strong>
+            <small id="session-total-meta">Question set covered</small>
+          </div>
+          <div class="session-metric-card avg">
+            <span>Avg Score</span>
+            <strong id="session-avg-value">0</strong>
+            <small id="session-avg-meta">Overall performance</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4 mb-4">
+    <div class="col-md-4">
+      <div class="card p-4 h-100" style="border-left:4px solid var(--success);">
+        <div class="d-flex align-items-center gap-2 mb-3">
+          <i class="bi bi-trophy-fill text-success"></i>
+          <span style="font-weight:700;color:var(--text);">Strong Points</span>
+        </div>
+        {% for point in strong_points %}
+        <div class="point-item">
+          <i class="bi bi-check-circle-fill text-success mt-1 flex-shrink-0" style="font-size:0.85rem;"></i>
+          <span class="text-muted" style="font-size:0.88rem;">{{ point }}</span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card p-4 h-100" style="border-left:4px solid var(--warning);">
+        <div class="d-flex align-items-center gap-2 mb-3">
+          <i class="bi bi-exclamation-triangle-fill text-warning"></i>
+          <span style="font-weight:700;color:var(--text);">Needs Work</span>
+        </div>
+        {% for point in weak_points %}
+        <div class="point-item">
+          <i class="bi bi-arrow-up-circle-fill text-warning mt-1 flex-shrink-0" style="font-size:0.85rem;"></i>
+          <span class="text-muted" style="font-size:0.88rem;">{{ point }}</span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card p-4 h-100" style="border-left:4px solid var(--primary);">
+        <div class="d-flex align-items-center gap-2 mb-1">
+          <i class="bi bi-briefcase-fill text-primary"></i>
+          <span style="font-weight:700;color:var(--text);">Job Recommendations</span>
+        </div>
+        <p class="text-muted small mb-3">Based on this session: <strong>{{ job_label }}</strong></p>
+        {% for job in job_recommendations %}
+        <div class="point-item">
+          <i class="bi bi-briefcase text-primary mt-1 flex-shrink-0" style="font-size:0.85rem;"></i>
+          <span class="text-muted" style="font-size:0.88rem;">{{ job }}</span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <div class="card p-4 mb-4">
+    <h6 style="font-weight:700;color:var(--text);margin-bottom:1.2rem;">
+      <i class="bi bi-bar-chart-fill me-2 text-primary"></i>Answer Category Breakdown
+    </h6>
+    <div class="row g-3">
+      {% for cat, count in cat_counts.items() %}
+        {% set pct = (count / total * 100)|int %}
+        {% if cat == 'Good Answer' %}{% set col = 'success' %}
+        {% elif cat in ('Technical Weakness','Conceptual Weakness','Weak Response') %}{% set col = 'warning' %}
+        {% elif cat == 'Communication Weakness' %}{% set col = 'primary' %}
+        {% else %}{% set col = 'danger' %}{% endif %}
+        <div class="col-md-6">
+          <div class="d-flex justify-content-between mb-1" style="font-size:0.82rem;">
+            <span style="color:var(--text);font-weight:600;">{{ cat }}</span>
+            <span class="text-muted">{{ count }}/{{ total }} ({{ pct }}%)</span>
+          </div>
+          <div class="progress-dark">
+            <div class="progress-fill {{ col }}" style="width:{{ pct }}%;"></div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  {% if good_answers %}
+  <div class="card p-4 mb-4" style="border-left:5px solid var(--success);">
+    <h6 style="font-weight:700;color:var(--success);margin-bottom:1.2rem;">
+      <i class="bi bi-check-circle-fill me-2"></i>Good Answers ({{ good_answers|length }})
+    </h6>
+    {% for a in good_answers %}
+      <div class="answer-row good mb-3">
+        <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-2">
+          <span style="font-weight:600;font-size:0.9rem;color:var(--text);">Q{{ loop.index }}: {{ a.question }}</span>
+          <div class="d-flex gap-2 align-items-center">
+            <span class="badge bg-success">Good Answer</span>
+            <span style="font-weight:700;font-size:0.88rem;color:var(--success);">{{ a.score }}/100</span>
+          </div>
+        </div>
+        <p class="text-muted fst-italic" style="font-size:0.85rem;margin-bottom:6px;">"{{ a.answer[:150] }}{% if a.answer|length > 150 %}...{% endif %}"</p>
+        {% set parts = a.feedback.split('||SUGG||') %}
+        <p class="text-muted" style="font-size:0.85rem;margin-bottom:0;">
+          <i class="bi bi-chat-dots me-1 text-success"></i>{{ parts[0] }}
+        </p>
+      </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {% if needs_work %}
+  <div class="card p-4 mb-4" style="border-left:5px solid var(--danger);">
+    <h6 style="font-weight:700;color:var(--danger);margin-bottom:1.2rem;">
+      <i class="bi bi-exclamation-circle-fill me-2"></i>Needs Work ({{ needs_work|length }}) — Focus on these
+    </h6>
+    {% for a in needs_work %}
+      {% if a.result_category in ('Technical Weakness','Conceptual Weakness','Weak Response') %}{% set col = 'warning' %}
+      {% elif a.result_category == 'Communication Weakness' %}{% set col = 'info' %}
+      {% else %}{% set col = 'danger' %}{% endif %}
+      <div class="answer-row {% if col == 'warning' %}weak{% else %}conf{% endif %} mb-3">
+        <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-2">
+          <span style="font-weight:600;font-size:0.9rem;color:var(--text);">{{ a.question }}</span>
+          <div class="d-flex gap-2 align-items-center">
+            <span class="badge bg-{{ col }} {% if col == 'warning' or col == 'info' %}text-dark{% endif %}">{{ a.result_category }}</span>
+            <span style="font-weight:700;font-size:0.88rem;color:var(--text);">{{ a.score }}/100</span>
+          </div>
+        </div>
+        <p class="text-muted fst-italic" style="font-size:0.85rem;margin-bottom:6px;">"{{ a.answer[:150] }}{% if a.answer|length > 150 %}...{% endif %}"</p>
+        {% set parts = a.feedback.split('||SUGG||') %}
+        {% set main_fb = parts[0] %}
+        {% set suggs = parts[1].split('||S||') if parts|length > 1 else [] %}
+        <div style="background:rgba(245,158,11,0.06);border-radius:8px;padding:0.75rem;margin-top:8px;">
+          <p style="font-size:0.85rem;margin-bottom:4px;color:var(--text);">
+            <i class="bi bi-lightbulb-fill text-warning me-1"></i>
+            <strong>Feedback:</strong> {{ main_fb }}
+          </p>
+          {% if suggs %}
+            {% for s in suggs %}{% if s.strip() %}
+            <p class="text-muted" style="font-size:0.82rem;margin:0;">• {{ s.strip() }}</p>
+            {% endif %}{% endfor %}
+          {% endif %}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- Feature 3: 30-Day Learning Planner -->
+  <div class="card p-4 mb-4" style="border-top:4px solid var(--success);">
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+      <div>
+        <h6 style="font-weight:700;color:var(--text);margin-bottom:4px;">
+          <i class="bi bi-calendar3 me-2 text-success"></i>30-Day Learning Planner
+        </h6>
+        <p class="text-muted small mb-0">Get a structured day-by-day study plan to master this skill</p>
+      </div>
+      <div class="d-flex gap-2 align-items-center flex-wrap">
+        <select id="detailPlanSkill" class="form-control" style="width:180px;">
+          <option value="{{ sess.category }}">{{ sess.category }} (This Session)</option>
+          <option value="Python">Python</option>
+          <option value="JavaScript">JavaScript</option>
+          <option value="DSA">DSA</option>
+          <option value="SQL">SQL</option>
+        </select>
+        <button class="btn btn-success fw-bold px-4" onclick="generateDetailPlan()">
+          <i class="bi bi-calendar-plus me-2"></i>Generate 30-Day Plan
+        </button>
+      </div>
+    </div>
+    <div id="detailPlanLoader" style="display:none;text-align:center;padding:1.5rem;">
+      <div class="spinner"></div>
+      <p class="text-muted mt-2">Generating your plan...</p>
+    </div>
+    <div id="detailPlanResult" style="display:none;margin-top:1.5rem;"></div>
+  </div>
+
+  <!-- Feature 1: Session Chatbot -->
+  {% set chatbot_mode = 'session' %}
+  {% set chatbot_context_json = session_context %}
+  {% set chatbot_title = '🤖 AI Coach — Ask About This Session' %}
+  {% include 'chatbot_component.html' %}
+
+  <div class="d-flex gap-3 justify-content-center flex-wrap mt-4">
+    <a href="{{ url_for('select_category') }}" class="btn btn-primary fw-bold px-5">
+      <i class="bi bi-arrow-repeat me-2"></i>Try Again
+    </a>
+    <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary fw-bold px-5 back-dashboard-btn">
+      <i class="bi bi-grid-fill me-2"></i>Back to Dashboard
+    </a>
+    <button class="btn btn-info fw-bold px-4" onclick="openSessionEmailModal({{ sess.id }})">
+      <i class="bi bi-envelope-check me-2"></i>Share via Email
+    </button>
+  </div>
+
+</div>
+
+<div class="modal fade" id="sessionEmailModal" tabindex="-1" aria-labelledby="sessionEmailModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" style="border-radius:20px;border:none;overflow:hidden;">
+      <div class="modal-header border-0 pb-0">
+        <div>
+          <h5 class="modal-title fw-bold" id="sessionEmailModalLabel">Send Session Report</h5>
+          <p class="text-muted small mb-0">The email will include student profile details in text and a designed PDF attachment for this session.</p>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body pt-3">
+        <div id="sessionEmailStatus" class="alert d-none" role="alert"></div>
+        <label for="sessionReportRecipient" class="form-label fw-semibold">Recipient Email</label>
+        <input type="email" id="sessionReportRecipient" class="form-control" placeholder="Leave blank to send to your registered email">
+      </div>
+      <div class="modal-footer border-0 pt-0">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary px-4" id="sessionEmailSendBtn" onclick="sendSessionEmailReport()">
+          <i class="bi bi-send-check me-2"></i>Send Report
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .session-live-graph-card {
+    overflow: hidden;
+    border: 1px solid rgba(79, 70, 229, 0.12);
+    background:
+      radial-gradient(circle at top left, rgba(56, 189, 248, 0.16), transparent 32%),
+      radial-gradient(circle at bottom right, rgba(139, 92, 246, 0.14), transparent 28%),
+      linear-gradient(145deg, rgba(255, 255, 255, 0.97), rgba(248, 250, 252, 0.94));
+  }
+
+  .session-live-chip {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    padding: 0.45rem 0.85rem;
+    background: rgba(79, 70, 229, 0.08);
+    color: #4338ca;
+    font-size: 0.8rem;
+    font-weight: 700;
+  }
+
+  .session-graph-shell {
+    position: relative;
+    height: 320px;
+    border-radius: 24px;
+    padding: 0.75rem;
+    background: linear-gradient(180deg, rgba(15, 23, 42, 0.96), rgba(30, 41, 59, 0.94));
+    box-shadow: 0 24px 50px rgba(15, 23, 42, 0.18);
+  }
+
+  .session-graph-svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  #session-grid-lines line {
+    stroke: rgba(148, 163, 184, 0.24);
+    stroke-width: 1;
+    stroke-dasharray: 6 8;
+    animation: sessionGridDash 9s linear infinite;
+  }
+
+  .session-area-path {
+    fill: url(#sessionAreaFill);
+    opacity: 0.9;
+  }
+
+  .session-line-path {
+    fill: none;
+    stroke: url(#sessionLineStroke);
+    stroke-width: 5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    filter: drop-shadow(0 0 18px rgba(56, 189, 248, 0.22));
+  }
+
+  .session-chart-dot {
+    fill: #f8fafc;
+    stroke: #38bdf8;
+    stroke-width: 4;
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: sessionDotPulse 2.8s ease-in-out infinite;
+  }
+
+  .session-chart-label {
+    fill: rgba(226, 232, 240, 0.88);
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .session-chart-value {
+    fill: #ffffff;
+    font-size: 14px;
+    font-weight: 800;
+  }
+
+  .session-metric-stack {
+    display: grid;
+    gap: 0.95rem;
+  }
+
+  .session-metric-card {
+    padding: 1rem 1.05rem;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    background: linear-gradient(135deg, rgba(124, 58, 237, 0.92), rgba(79, 70, 229, 0.92));
+    box-shadow: 0 18px 40px rgba(79, 70, 229, 0.18);
+  }
+
+  .session-metric-card span {
+    display: block;
+    color: rgba(255, 255, 255, 0.78);
+    font-size: 0.78rem;
+    font-weight: 700;
+    margin-bottom: 0.3rem;
+  }
+
+  .session-metric-card strong {
+    display: block;
+    color: #ffffff;
+    font-size: 1.8rem;
+    font-weight: 800;
+    line-height: 1.1;
+  }
+
+  .session-metric-card small {
+    display: block;
+    margin-top: 0.3rem;
+    color: rgba(255, 255, 255, 0.68);
+    font-size: 0.78rem;
+  }
+
+  .session-metric-card.good {
+    box-shadow: inset 0 0 0 1px rgba(16, 185, 129, 0.08);
+  }
+
+  .session-metric-card.needs-work {
+    box-shadow: inset 0 0 0 1px rgba(239, 68, 68, 0.08);
+  }
+
+  .session-metric-card.total {
+    box-shadow: inset 0 0 0 1px rgba(79, 70, 229, 0.08);
+  }
+
+  .session-metric-card.avg {
+    box-shadow: inset 0 0 0 1px rgba(245, 158, 11, 0.08);
+  }
+
+  @media (max-width: 767px) {
+    .session-graph-shell {
+      height: 280px;
+    }
+  }
+
+  @keyframes sessionGridDash {
+    from { stroke-dashoffset: 0; }
+    to { stroke-dashoffset: -140; }
+  }
+
+  @keyframes sessionDotPulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.08); opacity: 0.92; }
+  }
+</style>
+{% endblock %}
+{% block scripts %}
+<script>
+function animateSessionNumber(element, target) {
+  const startValue = parseFloat(element.dataset.value || '0');
+  const duration = 900;
+  const startTime = performance.now();
+
+  function step(now) {
+    const progress = Math.min((now - startTime) / duration, 1);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    const current = startValue + (target - startValue) * eased;
+    const displayValue = Number.isInteger(target) ? Math.round(current) : current.toFixed(1);
+    element.textContent = displayValue;
+
+    if (progress < 1) {
+      requestAnimationFrame(step);
+    } else {
+      element.textContent = target;
+      element.dataset.value = target;
+    }
+  }
+
+  requestAnimationFrame(step);
+}
+
+function buildSessionStatisticsGraph() {
+  const prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const totalQuestions = {{ total }};
+  const graphData = [
+    { label: 'Good Answers', value: {{ good_answers|length }} },
+    { label: 'Needs Work', value: {{ needs_work|length }} },
+    { label: 'Total Questions', value: totalQuestions },
+    { label: 'Avg Score', value: {{ avg_score|round(1) }}, max: 100 }
+  ];
+
+  const graphWidth = 652;
+  const chartLeft = 54;
+  const chartBottom = 272;
+  const chartHeight = 224;
+  const xGap = graphWidth / (graphData.length - 1);
+  const maxQuestionScale = Math.max(totalQuestions || 0, 10);
+
+  const normalizedPoints = graphData.map((item, index) => {
+    const maxValue = item.max || maxQuestionScale;
+    const ratio = maxValue ? Math.min(item.value / maxValue, 1) : 0;
+    return {
+      ...item,
+      x: chartLeft + index * xGap,
+      y: chartBottom - (ratio * chartHeight),
+      ratio
+    };
+  });
+
+  const linePath = normalizedPoints.map((point, index) =>
+    `${index === 0 ? 'M' : 'L'} ${point.x} ${point.y}`
+  ).join(' ');
+  const areaPath = `${linePath} L ${normalizedPoints[normalizedPoints.length - 1].x} ${chartBottom} L ${normalizedPoints[0].x} ${chartBottom} Z`;
+
+  const lineNode = document.getElementById('session-line-path');
+  const areaNode = document.getElementById('session-area-path');
+  const pointLayer = document.getElementById('session-point-layer');
+  if (!lineNode || !areaNode || !pointLayer) return;
+
+  areaNode.setAttribute('d', areaPath);
+  lineNode.setAttribute('d', linePath);
+
+  const pathLength = lineNode.getTotalLength();
+  lineNode.style.strokeDasharray = `${pathLength}`;
+  lineNode.style.strokeDashoffset = `${pathLength}`;
+  areaNode.style.opacity = '0';
+
+  pointLayer.innerHTML = normalizedPoints.map((point, index) => `
+    <g data-point-index="${index}" transform="translate(${point.x}, ${point.y})">
+      <circle class="session-chart-dot" r="8"></circle>
+      <text class="session-chart-label" x="0" y="44" text-anchor="middle">${point.label}</text>
+      <text class="session-chart-value" x="0" y="-16" text-anchor="middle">${point.value}</text>
+    </g>
+  `).join('');
+
+  requestAnimationFrame(() => {
+    lineNode.style.transition = 'stroke-dashoffset 1.15s cubic-bezier(.22, 1, .36, 1)';
+    lineNode.style.strokeDashoffset = '0';
+    areaNode.style.transition = 'opacity 0.8s ease 0.25s';
+    areaNode.style.opacity = '0.9';
+  });
+
+  // Continuous "moving" animation (subtle wave) after the draw-in finishes.
+  if (!prefersReducedMotion) {
+    const pointNodes = Array.from(pointLayer.querySelectorAll('g[data-point-index]'));
+    const basePoints = normalizedPoints.map(point => ({ ...point }));
+    const phaseOffsets = basePoints.map((_, index) => index * 0.9);
+
+    // Stop any previous animation loop if this page re-renders scripts.
+    if (window.__skillgapSessionGraphRaf) {
+      cancelAnimationFrame(window.__skillgapSessionGraphRaf);
+      window.__skillgapSessionGraphRaf = null;
+    }
+
+    const amplitude = 10; // px
+    const speed = 0.95;   // radians-ish per second
+
+    const animate = (now) => {
+      // Keep the RAF alive but avoid work when tab is hidden.
+      if (!document.hidden) {
+        const t = now / 1000;
+        const animated = basePoints.map((point, index) => {
+          const intensity = 0.35 + (point.ratio || 0) * 0.65;
+          const wobble = Math.sin(t * speed + phaseOffsets[index]) * amplitude * intensity;
+          return { ...point, y: point.y + wobble };
+        });
+
+        const liveLinePath = animated.map((point, index) =>
+          `${index === 0 ? 'M' : 'L'} ${point.x} ${point.y}`
+        ).join(' ');
+        const liveAreaPath = `${liveLinePath} L ${animated[animated.length - 1].x} ${chartBottom} L ${animated[0].x} ${chartBottom} Z`;
+
+        lineNode.setAttribute('d', liveLinePath);
+        areaNode.setAttribute('d', liveAreaPath);
+
+        pointNodes.forEach((node, index) => {
+          const point = animated[index];
+          if (!point) return;
+          node.setAttribute('transform', `translate(${point.x}, ${point.y})`);
+        });
+      }
+
+      window.__skillgapSessionGraphRaf = requestAnimationFrame(animate);
+    };
+
+    // Remove stroke-dash styling before we start changing path geometry.
+    setTimeout(() => {
+      lineNode.style.transition = '';
+      lineNode.style.strokeDasharray = '';
+      lineNode.style.strokeDashoffset = '';
+      window.__skillgapSessionGraphRaf = requestAnimationFrame(animate);
+    }, 1400);
+  }
+
+  animateSessionNumber(document.getElementById('session-good-value'), {{ good_answers|length }});
+  animateSessionNumber(document.getElementById('session-needs-work-value'), {{ needs_work|length }});
+  animateSessionNumber(document.getElementById('session-total-value'), {{ total }});
+  animateSessionNumber(document.getElementById('session-avg-value'), {{ avg_score|round(1) }});
+
+  document.getElementById('session-good-meta').textContent = `${totalQuestions ? Math.round(({{ good_answers|length }} / totalQuestions) * 100) : 0}% of total`;
+  document.getElementById('session-needs-work-meta').textContent = `${totalQuestions ? Math.round(({{ needs_work|length }} / totalQuestions) * 100) : 0}% of total`;
+  document.getElementById('session-total-meta').textContent = `${Math.round((totalQuestions / maxQuestionScale) * 100)}% question coverage`;
+  document.getElementById('session-avg-meta').textContent = `${Math.round({{ avg_score|round(1) }})}% performance score`;
+}
+
+let sessionEmailModal;
+let activeSessionEmailId = null;
+
+function openSessionEmailModal(sessionId) {
+  activeSessionEmailId = sessionId;
+  const status = document.getElementById('sessionEmailStatus');
+  const input = document.getElementById('sessionReportRecipient');
+  status.className = 'alert d-none';
+  status.textContent = '';
+  input.value = '';
+  sessionEmailModal.show();
+}
+
+async function sendSessionEmailReport() {
+  const btn = document.getElementById('sessionEmailSendBtn');
+  const status = document.getElementById('sessionEmailStatus');
+  const recipient = document.getElementById('sessionReportRecipient').value.trim();
+
+  status.className = 'alert d-none';
+  status.textContent = '';
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Sending...';
+
+  try {
+    const res = await fetch('/send-session-report-email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        session_id: activeSessionEmailId,
+        recipient_email: recipient
+      })
+    });
+    const data = await res.json();
+    if (!res.ok || !data.success) {
+      const message = data.error || 'Failed to send report.';
+      const details = data.details ? `\n\nDetails: ${data.details}` : '';
+      throw new Error(`${message}${details}`);
+    }
+    status.className = 'alert alert-success';
+    status.textContent = data.message;
+    setTimeout(() => sessionEmailModal.hide(), 1200);
+  } catch (error) {
+    status.className = 'alert alert-danger';
+    status.textContent = error.message;
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="bi bi-send-check me-2"></i>Send Report';
+  }
+}
+// ── Share Session via Email ──────────────────────────────────────────────────
+/**
+ * Collects session analysis data from Jinja-rendered template variables,
+ * builds a formatted email body, and opens Gmail compose in a new tab.
+ * No backend, no SMTP, no libraries required.
+ */
+function generateSessionEmailContent() {
+  // ── Pull data from Jinja template variables ──
+  const userName        = {{ session.get('user_name', '') | tojson }};
+  const category        = {{ sess.category | tojson }};
+  const sessionId       = {{ sess.id }};
+  const createdAt       = {{ sess.created_at[:16] | tojson }};
+  const avgScore        = {{ avg_score | int }};
+  const perfLabel       = {{ performance_label | tojson }};
+  const totalQuestions  = {{ total }};
+  const goodAnswersCount = {{ good_answers|length }};
+  const needsWorkCount  = {{ needs_work|length }};
+
+  const strongPoints = [
+    {% for p in strong_points %}"{{ p | e }}",{% endfor %}
+  ];
+
+  const weakPoints = [
+    {% for p in weak_points %}"{{ p | e }}",{% endfor %}
+  ];
+
+  const jobRecommendations = [
+    {% for job in job_recommendations %}"{{ job | e }}",{% endfor %}
+  ];
+
+  const catCounts = {
+    {% for cat, count in cat_counts.items() %}"{{ cat | e }}": {{ count }},{% endfor %}
+  };
+
+  // ── Build plain-text email body ──
+  const greeting = userName ? `Hello ${userName},` : "Hello,";
+
+  const catBreakdown = Object.entries(catCounts)
+    .map(([cat, cnt]) => `  • ${cat}: ${cnt}/${totalQuestions}`)
+    .join("\n");
+
+  const strengths = strongPoints.map(p => `  ✓ ${p}`).join("\n");
+  const weaknesses = weakPoints.map(p => `  ✗ ${p}`).join("\n");
+  const recommendations = jobRecommendations.map(j => `  → ${j}`).join("\n");
+
+  const body = [
+    greeting,
+    "",
+    "Here is my Skill Gap Analysis Session Report:",
+    "═══════════════════════════════════════════════",
+    "",
+    "📌 SESSION DETAILS",
+    `  Session ID     : #${sessionId}`,
+    `  Category       : ${category}`,
+    `  Date           : ${createdAt}`,
+    `  Total Questions: ${totalQuestions}`,
+    "",
+    "📊 OVERALL SCORE",
+    `  Score       : ${avgScore}/100`,
+    `  Performance : ${perfLabel}`,
+    "",
+    "📋 ANSWER BREAKDOWN",
+    `  Good Answers : ${goodAnswersCount}`,
+    `  Needs Work   : ${needsWorkCount}`,
+    "",
+    "📊 CATEGORY BREAKDOWN",
+    catBreakdown,
+    "",
+    "✅ STRENGTHS",
+    strengths,
+    "",
+    "⚠️  AREAS TO IMPROVE",
+    weaknesses,
+    "",
+    "💼 JOB RECOMMENDATIONS",
+    recommendations,
+    "",
+    "═══════════════════════════════════════════════",
+    "Generated by Skill Gap Analyzer",
+    "https://skillgap.ai",
+  ].join("\n");
+
+  return {
+    subject: `Session #${sessionId} - ${category} Interview Analysis`,
+    body,
+  };
+}
+
+function shareSessionViaEmail() {
+  const { subject, body } = generateSessionEmailContent();
+
+  const encodedSubject = encodeURIComponent(subject);
+  const encodedBody    = encodeURIComponent(body);
+
+  const gmailUrl =
+    `https://mail.google.com/mail/?view=cm&fs=1&to=&su=${encodedSubject}&body=${encodedBody}`;
+
+  window.open(gmailUrl, "_blank");
+}
+
+// ── Feature 3: 30-Day Plan generator ─────────────────────────────────────────
+
+async function generateDetailPlan() {
+  const skill = document.getElementById('detailPlanSkill').value;
+  document.getElementById('detailPlanResult').style.display = 'none';
+  document.getElementById('detailPlanLoader').style.display = 'block';
+  try {
+    const res  = await fetch('/api/learning-plan', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ skill, session_id: {{ sess.id }} })
+    });
+    const data = await res.json();
+    document.getElementById('detailPlanLoader').style.display = 'none';
+    if (data.error) {
+      document.getElementById('detailPlanResult').innerHTML = `<div class="alert alert-danger">${data.error}</div>`;
+    } else {
+      renderDetailPlan(data.plan, data.skill);
+    }
+    document.getElementById('detailPlanResult').style.display = 'block';
+  } catch(e) {
+    document.getElementById('detailPlanLoader').style.display = 'none';
+    document.getElementById('detailPlanResult').innerHTML = `<div class="alert alert-danger">Error generating plan.</div>`;
+    document.getElementById('detailPlanResult').style.display = 'block';
+  }
+}
+
+function renderDetailPlan(plan, skill) {
+  const phaseColors = { 'Foundation': '#4f46e5', 'Core Skills': '#10b981', 'Advanced & Project': '#f59e0b' };
+  let currentPhase = '';
+  let html = `<h6 style="font-weight:700;color:var(--text);margin-bottom:1rem;">
+    <i class="bi bi-calendar3 me-2 text-success"></i>30-Day ${skill} Learning Plan
+  </h6><div class="row g-2">`;
+
+  plan.forEach(day => {
+    if (day.phase !== currentPhase) {
+      if (currentPhase) html += '</div><div class="col-12 mt-2"></div>';
+      const col = phaseColors[day.phase] || '#4f46e5';
+      html += `<div class="col-12 mb-1">
+        <span class="badge" style="background:${col};font-size:0.82rem;padding:5px 12px;">${day.phase}</span>
+      </div>`;
+      currentPhase = day.phase;
+    }
+    const col = phaseColors[day.phase] || '#4f46e5';
+    html += `
+      <div class="col-md-6 col-lg-4">
+        <div class="card p-3 h-100" style="border-left:3px solid ${col};border-radius:10px;">
+          <div class="d-flex align-items-center gap-2 mb-1">
+            <span style="width:26px;height:26px;border-radius:50%;background:${col};color:#fff;display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:700;flex-shrink:0;">${day.day}</span>
+            <span style="font-weight:700;font-size:0.82rem;color:var(--text);">${day.topic}</span>
+          </div>
+          <p class="text-muted mb-1" style="font-size:0.78rem;">${day.task}</p>
+          <div style="margin-top:0.5rem;">
+            <span class="badge" style="background:${col};opacity:0.8;font-size:0.7rem;">${day.domain}</span>
+          </div>
+        </div>
+      </div>`;
+  });
+  html += '</div>';
+  document.getElementById('detailPlanResult').innerHTML = html;
+}
+
+async function deleteThisSession() {
+  const sessionId = {{ sess.id }};
+  if (!confirm(`Delete Session #${sessionId}? This cannot be undone.`)) return;
+
+  try {
+    const response = await fetch(`/api/sessions/${sessionId}/delete`, { method: 'POST' });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok || !data.success) {
+      throw new Error(data.error || 'Unable to delete session.');
+    }
+    window.location.href = '{{ url_for("dashboard") }}';
+  } catch (error) {
+    alert(error.message);
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  buildSessionStatisticsGraph();
+  const modalElement = document.getElementById('sessionEmailModal');
+  if (modalElement) {
+    sessionEmailModal = new bootstrap.Modal(modalElement);
+  }
+});
+</script>
+{% endblock %}

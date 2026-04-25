@@ -1,0 +1,180 @@
+{% extends 'base.html' %}
+{% block title %}Manage Devices – SkillGap AI{% endblock %}
+{% block content %}
+
+<div class="devices-shapes-bg" style="position: fixed; top: 0; left: 0; right: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0;" aria-hidden="true">
+  <svg class="shapes-svg" viewBox="0 0 1400 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" style="animation: shapeFloat 8s ease-in-out infinite;">
+    <defs>
+      <radialGradient id="sg1" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#f472b6" stop-opacity="0.28"/>
+        <stop offset="100%" stop-color="#f472b6" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="sg2" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.25"/>
+        <stop offset="100%" stop-color="#38bdf8" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="sg3" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#34d399" stop-opacity="0.22"/>
+        <stop offset="100%" stop-color="#34d399" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="sg4" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#fb923c" stop-opacity="0.22"/>
+        <stop offset="100%" stop-color="#fb923c" stop-opacity="0"/>
+      </radialGradient>
+      <filter id="glow">
+        <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+        <feMerge>
+          <feMergeNode in="coloredBlur"/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+    </defs>
+    <ellipse cx="1300" cy="120" rx="160" ry="160" fill="url(#sg1)" style="animation: shapeGlow 3s ease-in-out infinite;" filter="url(#glow)"/>
+    <ellipse cx="1300" cy="120" rx="110" ry="110" fill="#fce7f3" opacity="0.42" style="animation: shimmerOverlay 4s ease-in-out infinite;"/>
+    <ellipse cx="1268" cy="92" rx="42" ry="28" fill="#fff" opacity="0.28"/>
+    <rect x="1100" y="160" width="75" height="230" rx="37" fill="#7dd3fc" opacity="0.28" transform="rotate(30 1137 275)" style="animation: shapeFloat 6s ease-in-out infinite 0.5s;"/>
+    <ellipse cx="80" cy="680" rx="140" ry="140" fill="url(#sg2)" style="animation: shapeGlow 4s ease-in-out infinite 1s;" filter="url(#glow)"/>
+    <ellipse cx="80" cy="680" rx="95" ry="95" fill="#bae6fd" opacity="0.35"/>
+    <ellipse cx="55" cy="655" rx="34" ry="22" fill="#fff" opacity="0.26"/>
+    <rect x="-80" y="530" width="300" height="80" rx="40" fill="#fdba74" opacity="0.26" transform="rotate(-15 70 570)" style="animation: shapeFloat 7s ease-in-out infinite 1.5s;"/>
+    <ellipse cx="370" cy="490" rx="58" ry="58" fill="url(#sg3)" style="animation: shapeGlow 3.5s ease-in-out infinite 0.8s;" filter="url(#glow)"/>
+    <ellipse cx="370" cy="490" rx="40" ry="40" fill="#a7f3d0" opacity="0.30" style="animation: shimmerOverlay 5s ease-in-out infinite 0.3s;"/>
+    <ellipse cx="354" cy="474" rx="15" ry="10" fill="#fff" opacity="0.33"/>
+    <rect x="1050" y="620" width="340" height="95" rx="47" fill="#a3e635" opacity="0.20" transform="rotate(-20 1220 667)" style="animation: shapeFloat 8s ease-in-out infinite 1.2s;"/>
+    <ellipse cx="1360" cy="820" rx="130" ry="130" fill="url(#sg4)" style="animation: shapeGlow 4.5s ease-in-out infinite 1.5s;" filter="url(#glow)"/>
+    <ellipse cx="1360" cy="820" rx="90" ry="90" fill="#fed7aa" opacity="0.32" style="animation: shimmerOverlay 6s ease-in-out infinite 0.6s;"/>
+    <ellipse cx="200" cy="300" rx="220" ry="80" fill="#e879f9" opacity="0.10" style="animation: shimmerOverlay 5s ease-in-out infinite;"/>
+  </svg>
+</div>
+
+<div class="container" style="padding:2.5rem 0 4rem; position: relative; z-index: 1;">
+
+  <div class="d-flex align-items-center justify-content-between mb-5 flex-wrap gap-3">
+    <div>
+      <h2 style="font-size:2rem;font-weight:800;color:var(--warning);margin-bottom:4px;">Manage Devices</h2>
+      <p class="mb-0" style="color:#fff;opacity:0.9;">View and control devices accessing your account for enhanced security</p>
+    </div>
+    <a href="{{ url_for('dashboard') }}" class="btn btn-outline-primary fw-bold">
+      <i class="bi bi-arrow-left me-2"></i>Back to Dashboard
+    </a>
+  </div>
+
+  <!-- Security Info Card -->
+  <div class="card p-4 mb-4 device-info-card">
+    <div class="d-flex align-items-center gap-3">
+      <div style="width:56px;height:56px;border-radius:50%;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;">
+        <i class="bi bi-shield-check" style="font-size:1.8rem;"></i>
+      </div>
+      <div>
+        <div style="font-weight:700;color:#fff;">Multi-Device Account Access Enabled</div>
+        <p style="font-size:0.9rem;margin:4px 0 0;opacity:0.9;">Your account is now accessible from multiple devices simultaneously. You can manage device access and revoke permissions anytime.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Active Devices List -->
+  <div class="card p-4 mb-4">
+    <div class="d-flex align-items-center justify-content-between mb-4">
+      <div>
+        <h5 style="font-weight:700;color:var(--text);margin-bottom:2px;">
+          <i class="bi bi-phone me-2 text-primary"></i>Active Devices
+        </h5>
+        <p class="text-muted small mb-0">{{ devices|length }} device{{ 's' if devices|length != 1 else '' }} with active sessions</p>
+      </div>
+    </div>
+
+    {% if devices %}
+      <div style="display:grid;gap:1rem;">
+        {% for device in devices %}
+          {% set device_icon = 'bi-phone-landscape' if 'Mobile' in device['device_name'] else ('bi-tablet' if 'Tablet' in device['device_name'] else 'bi-laptop') %}
+          <div class="p-3" style="border:1px solid var(--border);border-radius:8px;background:var(--bg-secondary);transition:all 0.2s;">
+            <div class="d-flex align-items-start justify-content-between gap-3">
+              <div class="d-flex align-items-start gap-3" style="flex:1;">
+                <div style="width:48px;height:48px;border-radius:8px;background:linear-gradient(135deg,#4f46e5,#6366f1);display:flex;align-items:center;justify-content:center;color:white;font-size:1.5rem;flex-shrink:0;">
+                  <i class="bi {{ device_icon }}"></i>
+                </div>
+                <div style="flex:1;">
+                  <div style="font-weight:700;color:var(--text);margin-bottom:4px;">{{ device['device_name'] }}</div>
+                  <div style="font-size:0.85rem;color:var(--text-light);">
+                    <div class="mb-1"><i class="bi bi-geo-alt-fill me-1"></i>IP: {{ device['ip_address'] }}</div>
+                    <div class="mb-1">
+                      <i class="bi bi-calendar me-1"></i>
+                      Added: 
+                      {% if device['created_at'] %}
+                        {{ device['created_at'][:10] }}
+                      {% else %}
+                        Unknown
+                      {% endif %}
+                    </div>
+                    <div>
+                      <i class="bi bi-clock me-1"></i>
+                      Last active: 
+                      {% if device['last_activity'] %}
+                        {% set last_active_date = device['last_activity'][:10] %}
+                        {% set last_active_time = device['last_activity'][11:16] %}
+                        {{ last_active_date }} at {{ last_active_time }}
+                      {% else %}
+                        Never
+                      {% endif %}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <button class="btn btn-sm btn-outline-danger fw-bold" onclick="revokeDevice({{ device['id'] }}, '{{ device['device_name'] }}')">
+                <i class="bi bi-x-lg me-1"></i>Revoke Access
+              </button>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div style="text-align:center;padding:3rem 1rem;">
+        <i class="bi bi-smartphone" style="font-size:3rem;color:var(--text-light);opacity:0.5;"></i>
+        <p class="text-muted mt-3">No active devices found. Your session will appear here once you log in on a device.</p>
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Account Security Tips -->
+  <div class="card p-4" style="border-left:4px solid var(--warning);">
+    <h6 style="font-weight:700;color:var(--text);margin-bottom:1rem;">
+      <i class="bi bi-exclamation-circle-fill text-warning me-2"></i>Security Tips
+    </h6>
+    <ul style="margin:0;padding-left:1.5rem;color:var(--text-light);font-size:0.9rem;">
+      <li class="mb-2">Your account can be accessed from multiple devices simultaneously.</li>
+      <li class="mb-2">Regularly review active devices to ensure only authorized devices are connected.</li>
+      <li class="mb-2">If you notice an unfamiliar device, click "Revoke Access" to disconnect it immediately.</li>
+      <li class="mb-2">Use strong, unique passwords and enable device notifications for added security.</li>
+      <li>Logging out from a device will disconnect only that device from your account.</li>
+    </ul>
+  </div>
+
+</div>
+
+<script>
+function revokeDevice(deviceId, deviceName) {
+  if (!confirm(`Are you sure you want to revoke access for "${deviceName}"?`)) return;
+  
+  fetch(`/api/devices/${deviceId}/revoke`, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+  })
+  .then(r => r.json())
+  .then(data => {
+    if (data.success) {
+      alert('Device access revoked successfully');
+      location.reload();
+    } else {
+      alert('Error: ' + (data.error || 'Unknown error'));
+    }
+  })
+  .catch(e => alert('Error: ' + e));
+}
+
+.btn-outline-danger:hover {
+  background-color: var(--danger);
+  border-color: var(--danger);
+  color: white;
+}
+</style>
+{% endblock %}

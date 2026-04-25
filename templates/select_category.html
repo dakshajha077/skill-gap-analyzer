@@ -1,0 +1,180 @@
+{% extends 'base.html' %}
+{% block title %}Choose Category – SkillGap AI{% endblock %}
+{% block body_class %}dashboard-bg interview-category-page{% endblock %}
+{% block content %}
+
+<div class="select-category-shapes-bg" style="position: fixed; top: 0; left: 0; right: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0;" aria-hidden="true">
+  <svg class="shapes-svg" viewBox="0 0 1400 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" style="animation: shapeFloat 8s ease-in-out infinite;">
+    <defs>
+      <radialGradient id="sg1" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#f472b6" stop-opacity="0.28"/>
+        <stop offset="100%" stop-color="#f472b6" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="sg2" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.25"/>
+        <stop offset="100%" stop-color="#38bdf8" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="sg3" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#34d399" stop-opacity="0.22"/>
+        <stop offset="100%" stop-color="#34d399" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="sg4" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#fb923c" stop-opacity="0.22"/>
+        <stop offset="100%" stop-color="#fb923c" stop-opacity="0"/>
+      </radialGradient>
+      <filter id="glow">
+        <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+        <feMerge>
+          <feMergeNode in="coloredBlur"/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+    </defs>
+    <ellipse cx="1300" cy="120" rx="160" ry="160" fill="url(#sg1)" style="animation: shapeGlow 3s ease-in-out infinite;" filter="url(#glow)"/>
+    <ellipse cx="1300" cy="120" rx="110" ry="110" fill="#fce7f3" opacity="0.42" style="animation: shimmerOverlay 4s ease-in-out infinite;"/>
+    <ellipse cx="1268" cy="92" rx="42" ry="28" fill="#fff" opacity="0.28"/>
+    <rect x="1100" y="160" width="75" height="230" rx="37" fill="#7dd3fc" opacity="0.28" transform="rotate(30 1137 275)" style="animation: shapeFloat 6s ease-in-out infinite 0.5s;"/>
+    <ellipse cx="80" cy="680" rx="140" ry="140" fill="url(#sg2)" style="animation: shapeGlow 4s ease-in-out infinite 1s;" filter="url(#glow)"/>
+    <ellipse cx="80" cy="680" rx="95" ry="95" fill="#bae6fd" opacity="0.35"/>
+    <ellipse cx="55" cy="655" rx="34" ry="22" fill="#fff" opacity="0.26"/>
+    <rect x="-80" y="530" width="300" height="80" rx="40" fill="#fdba74" opacity="0.26" transform="rotate(-15 70 570)" style="animation: shapeFloat 7s ease-in-out infinite 1.5s;"/>
+    <ellipse cx="370" cy="490" rx="58" ry="58" fill="url(#sg3)" style="animation: shapeGlow 3.5s ease-in-out infinite 0.8s;" filter="url(#glow)"/>
+    <ellipse cx="370" cy="490" rx="40" ry="40" fill="#a7f3d0" opacity="0.30" style="animation: shimmerOverlay 5s ease-in-out infinite 0.3s;"/>
+    <ellipse cx="354" cy="474" rx="15" ry="10" fill="#fff" opacity="0.33"/>
+    <rect x="1050" y="620" width="340" height="95" rx="47" fill="#a3e635" opacity="0.20" transform="rotate(-20 1220 667)" style="animation: shapeFloat 8s ease-in-out infinite 1.2s;"/>
+    <ellipse cx="1360" cy="820" rx="130" ry="130" fill="url(#sg4)" style="animation: shapeGlow 4.5s ease-in-out infinite 1.5s;" filter="url(#glow)"/>
+    <ellipse cx="1360" cy="820" rx="90" ry="90" fill="#fed7aa" opacity="0.32" style="animation: shimmerOverlay 6s ease-in-out infinite 0.6s;"/>
+    <ellipse cx="200" cy="300" rx="220" ry="80" fill="#e879f9" opacity="0.10" style="animation: shimmerOverlay 5s ease-in-out infinite;"/>
+  </svg>
+</div>
+
+<div class="container" style="padding:3rem 0; position: relative; z-index: 1;">
+  <div class="text-center mb-5">
+    <h2 class="select-category-welcome" style="font-size:2rem;font-weight:800;color:#fbbc04;">Welcome, {{ session.user_name }}! 👋</h2>
+    <p class="select-category-subtitle text-muted">Choose a category to begin your 10-question mock interview session</p>
+  </div>
+
+  <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 justify-content-center" style="max-width:900px;margin:0 auto;">
+    {% for name, info in categories.items() %}
+    <div class="col">
+      <div class="cat-card" onclick="handleCategoryClick(this, '{{ name }}')" style="text-decoration:none; cursor: pointer;">
+        <div class="cat-icon mx-auto bg-{{ info.color }} bg-opacity-10">
+          <i class="bi {{ info.icon }} text-{{ info.color }}"></i>
+        </div>
+        <div class="cat-title">{{ name }}</div>
+        <div class="cat-desc mb-3">{{ info.desc }}</div>
+        <div class="d-flex align-items-center justify-content-between">
+          <span class="badge bg-{{ info.color }} bg-opacity-10 text-{{ info.color }} px-2 py-1" style="font-size:0.75rem;">
+            <i class="bi bi-clock me-1"></i>~15 min
+          </span>
+          <span class="text-{{ info.color }}" style="font-size:0.85rem;font-weight:600;">Start <i class="bi bi-arrow-right"></i></span>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- Animated Resume Test Modal -->
+  <div id="resumeTestModal" class="resume-modal-overlay" style="display: none;">
+    <div class="resume-modal-content">
+      <div class="modal-header-badge">
+        <i class="bi bi-lightning-fill" style="color: #fbbf24; font-size: 1.5rem;"></i>
+      </div>
+      <h3 class="modal-title">Continue Your Test?</h3>
+      <p class="modal-description">We found an incomplete <strong id="modalCategoryName"></strong> interview. Want to continue where you left off?</p>
+      <p class="modal-timestamp"><small>Started: <span id="modalTimestamp"></span></small></p>
+      
+      <div class="modal-buttons">
+        <button onclick="continueTest()" class="btn-modal btn-continue">
+          <i class="bi bi-arrow-counterclockwise me-2"></i>Continue Test
+        </button>
+        <button onclick="startFreshTest()" class="btn-modal btn-fresh">
+          <i class="bi bi-arrow-clockwise me-2"></i>Start Fresh
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="text-center mt-5 d-flex gap-3 justify-content-center">
+    <a href="{{ url_for('skill_analysis') }}" class="btn btn-outline-primary fw-semibold interview-nav-btn">
+      <i class="bi bi-bar-chart me-2"></i>Skill Gap Analysis
+    </a>
+    <a href="{{ url_for('dashboard') }}" class="btn btn-outline-primary fw-semibold interview-nav-btn">
+      <i class="bi bi-grid me-2"></i>My Dashboard
+    </a>
+  </div>
+</div>
+
+<script>
+let currentCategory = null;
+let incompleteSessionData = null;
+
+// Format timestamp
+function formatDate(dateStr) {
+  const options = { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+  return new Date(dateStr).toLocaleDateString('en-US', options);
+}
+
+// Handle category click
+async function handleCategoryClick(element, categoryName) {
+  currentCategory = categoryName;
+  
+  // Check if there's an incomplete session
+  try {
+    const response = await fetch(`/api/check-incomplete-session/${categoryName}`);
+    const data = await response.json();
+    
+    if (data.has_incomplete) {
+      // Show the resume modal
+      incompleteSessionData = data;
+      document.getElementById('modalCategoryName').textContent = categoryName;
+      document.getElementById('modalTimestamp').textContent = formatDate(data.created_at);
+      
+      const modal = document.getElementById('resumeTestModal');
+      modal.style.display = 'flex';
+      modal.classList.add('show-modal');
+      
+      // Prevent scrolling when modal is shown
+      document.body.style.overflow = 'hidden';
+    } else {
+      // No incomplete session, start fresh
+      window.location.href = `/start-interview/${categoryName}`;
+    }
+  } catch (error) {
+    console.error('Error checking incomplete session:', error);
+    // If error, just proceed with fresh start
+    window.location.href = `/start-interview/${categoryName}`;
+  }
+}
+
+// Continue the incomplete test
+function continueTest() {
+  if (incompleteSessionData && incompleteSessionData.session_id) {
+    window.location.href = `/continue-interview/${incompleteSessionData.session_id}`;
+  }
+}
+
+// Start a fresh test (delete incomplete and start new)
+function startFreshTest() {
+  const modal = document.getElementById('resumeTestModal');
+  modal.classList.remove('show-modal');
+  modal.style.display = 'none';
+  document.body.style.overflow = 'auto';
+  
+  // Redirect to start fresh
+  window.location.href = `/start-interview/${currentCategory}`;
+}
+
+// Close modal when clicking outside
+document.addEventListener('DOMContentLoaded', function() {
+  const modal = document.getElementById('resumeTestModal');
+  modal.addEventListener('click', function(event) {
+    if (event.target === this) {
+      this.classList.remove('show-modal');
+      this.style.display = 'none';
+      document.body.style.overflow = 'auto';
+    }
+  });
+});
+</script>
+{% endblock %}

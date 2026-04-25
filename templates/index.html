@@ -1,0 +1,747 @@
+{% extends 'base.html' %}
+{% block title %}SkillGap AI – Intelligent Interview & Skill Analysis{% endblock %}
+{% block body_class %}dashboard-bg home-page{% endblock %}
+{% block content %}
+
+<div class="dashboard-shapes-bg" style="position: fixed; top: 0; left: 0; right: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0;" aria-hidden="true">
+  <svg class="shapes-svg" viewBox="0 0 1400 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" style="animation: shapeFloat 8s ease-in-out infinite;">
+    <defs>
+      <radialGradient id="homeDashSg1" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#f472b6" stop-opacity="0.28"/>
+        <stop offset="100%" stop-color="#f472b6" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="homeDashSg2" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.25"/>
+        <stop offset="100%" stop-color="#38bdf8" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="homeDashSg3" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#34d399" stop-opacity="0.22"/>
+        <stop offset="100%" stop-color="#34d399" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="homeDashSg4" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#fb923c" stop-opacity="0.22"/>
+        <stop offset="100%" stop-color="#fb923c" stop-opacity="0"/>
+      </radialGradient>
+      <filter id="homeDashGlow">
+        <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+        <feMerge>
+          <feMergeNode in="coloredBlur"/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+    </defs>
+    <ellipse cx="1300" cy="120" rx="160" ry="160" fill="url(#homeDashSg1)" style="animation: shapeGlow 3s ease-in-out infinite;" filter="url(#homeDashGlow)"/>
+    <ellipse cx="1300" cy="120" rx="110" ry="110" fill="#fce7f3" opacity="0.42" style="animation: shimmerOverlay 4s ease-in-out infinite;"/>
+    <ellipse cx="1268" cy="92" rx="42" ry="28" fill="#fff" opacity="0.28"/>
+    <rect x="1100" y="160" width="75" height="230" rx="37" fill="#7dd3fc" opacity="0.28" transform="rotate(30 1137 275)" style="animation: shapeFloat 6s ease-in-out infinite 0.5s;"/>
+    <ellipse cx="80" cy="680" rx="140" ry="140" fill="url(#homeDashSg2)" style="animation: shapeGlow 4s ease-in-out infinite 1s;" filter="url(#homeDashGlow)"/>
+    <ellipse cx="80" cy="680" rx="95" ry="95" fill="#bae6fd" opacity="0.35"/>
+    <ellipse cx="55" cy="655" rx="34" ry="22" fill="#fff" opacity="0.26"/>
+    <rect x="-80" y="530" width="300" height="80" rx="40" fill="#fdba74" opacity="0.26" transform="rotate(-15 70 570)" style="animation: shapeFloat 7s ease-in-out infinite 1.5s;"/>
+    <ellipse cx="370" cy="490" rx="58" ry="58" fill="url(#homeDashSg3)" style="animation: shapeGlow 3.5s ease-in-out infinite 0.8s;" filter="url(#homeDashGlow)"/>
+    <ellipse cx="370" cy="490" rx="40" ry="40" fill="#a7f3d0" opacity="0.30" style="animation: shimmerOverlay 5s ease-in-out infinite 0.3s;"/>
+    <ellipse cx="354" cy="474" rx="15" ry="10" fill="#fff" opacity="0.33"/>
+    <rect x="1050" y="620" width="340" height="95" rx="47" fill="#a3e635" opacity="0.20" transform="rotate(-20 1220 667)" style="animation: shapeFloat 8s ease-in-out infinite 1.2s;"/>
+    <ellipse cx="1360" cy="820" rx="130" ry="130" fill="url(#homeDashSg4)" style="animation: shapeGlow 4.5s ease-in-out infinite 1.5s;" filter="url(#homeDashGlow)"/>
+    <ellipse cx="1360" cy="820" rx="90" ry="90" fill="#fed7aa" opacity="0.32" style="animation: shimmerOverlay 6s ease-in-out infinite 0.6s;"/>
+    <ellipse cx="200" cy="300" rx="220" ry="80" fill="#e879f9" opacity="0.10" style="animation: shimmerOverlay 5s ease-in-out infinite;"/>
+  </svg>
+</div>
+
+<div class="hero-section home-hero">
+  <div class="container position-relative">
+    <div class="hero-badge"><i class="bi bi-stars me-1"></i> AI-Powered Career Intelligence Platform</div>
+    <h1 class="hero-title mb-3">Close Your Skill Gap<br class="hero-title-br">And Land Your Dream Role.</h1>
+    <p class="hero-subtitle mb-4">Advanced NLP-based skill matching, semantic interview analysis, and personalised career guidance — all in one professional platform.</p>
+    {% if session.get('user_id') %}
+      <div class="hero-actions">
+      <a href="{{ url_for('skill_analysis') }}" class="btn btn-warning btn-lg fw-bold px-5">
+        <i class="bi bi-bar-chart-fill me-2"></i>Analyse My Skills
+      </a>
+      <a href="{{ url_for('select_category') }}" class="btn btn-outline-light btn-lg px-4">
+        <i class="bi bi-mic-fill me-2"></i>Start Interview
+      </a>
+      </div>
+    {% else %}
+      <div class="hero-actions">
+      <a href="{{ url_for('register') }}" class="btn btn-warning btn-lg fw-bold px-5">
+        <i class="bi bi-rocket-fill me-2"></i>Get Started Free
+      </a>
+      <a href="{{ url_for('login') }}" class="btn btn-outline-light btn-lg px-4">
+        <i class="bi bi-box-arrow-in-right me-2"></i>Login
+      </a>
+      </div>
+    {% endif %}
+    <div class="hero-trust-row mt-4 d-flex justify-content-center gap-4 flex-wrap">
+      <span class="text-white-50 small"><i class="bi bi-check-circle-fill text-warning me-1"></i>Semantic skill comparison</span>
+      <span class="text-white-50 small"><i class="bi bi-check-circle-fill text-warning me-1"></i>Unique response validation</span>
+      <span class="text-white-50 small"><i class="bi bi-check-circle-fill text-warning me-1"></i>PDF export reports</span>
+      <span class="text-white-50 small"><i class="bi bi-check-circle-fill text-warning me-1"></i>5 interview categories</span>
+    </div>
+    <div class="hero-animation nexus-orb" aria-hidden="true">
+      <div class="nexus-orb-hero">
+        <svg class="nexus-orb-svg" viewBox="0 0 800 564" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+          <defs>
+            <radialGradient id="nx_bg" cx="50%" cy="45%" r="70%">
+              <stop offset="0%" stop-color="#0b1a4a" stop-opacity="0.95"/>
+              <stop offset="55%" stop-color="#070e2e" stop-opacity="0.96"/>
+              <stop offset="100%" stop-color="#04081a" stop-opacity="0.98"/>
+            </radialGradient>
+
+            <radialGradient id="nx_orb" cx="50%" cy="42%" r="58%">
+              <stop offset="0%" stop-color="#7dd3fc" stop-opacity="0.22"/>
+              <stop offset="45%" stop-color="#38bdf8" stop-opacity="0.14"/>
+              <stop offset="78%" stop-color="#a855f7" stop-opacity="0.16"/>
+              <stop offset="100%" stop-color="#a855f7" stop-opacity="0.04"/>
+            </radialGradient>
+
+            <linearGradient id="nx_orbStroke" x1="22%" y1="16%" x2="78%" y2="88%">
+              <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.95"/>
+              <stop offset="55%" stop-color="#6366f1" stop-opacity="0.7"/>
+              <stop offset="100%" stop-color="#a855f7" stop-opacity="0.95"/>
+            </linearGradient>
+
+            <linearGradient id="nx_orbitStroke" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.0"/>
+              <stop offset="18%" stop-color="#38bdf8" stop-opacity="0.8"/>
+              <stop offset="55%" stop-color="#a855f7" stop-opacity="0.85"/>
+              <stop offset="82%" stop-color="#38bdf8" stop-opacity="0.6"/>
+              <stop offset="100%" stop-color="#38bdf8" stop-opacity="0.0"/>
+            </linearGradient>
+
+            <filter id="nx_glow" x="-60%" y="-60%" width="220%" height="220%">
+              <feGaussianBlur stdDeviation="7" result="b"/>
+              <feColorMatrix in="b" type="matrix"
+                values="1 0 0 0 0
+                        0 1 0 0 0
+                        0 0 1 0 0
+                        0 0 0 0.85 0" result="g"/>
+              <feMerge>
+                <feMergeNode in="g"/>
+                <feMergeNode in="SourceGraphic"/>
+              </feMerge>
+            </filter>
+
+            <filter id="nx_soft" x="-40%" y="-40%" width="180%" height="180%">
+              <feGaussianBlur stdDeviation="12"/>
+            </filter>
+
+            <clipPath id="nx_clipOrb">
+              <circle cx="400" cy="276" r="176"/>
+            </clipPath>
+
+            <linearGradient id="nx_pedestal" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#1d4ed8" stop-opacity="0.55"/>
+              <stop offset="45%" stop-color="#38bdf8" stop-opacity="0.55"/>
+              <stop offset="100%" stop-color="#a855f7" stop-opacity="0.55"/>
+            </linearGradient>
+
+            <linearGradient id="nx_pill" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#1b2a6a" stop-opacity="0.92"/>
+              <stop offset="55%" stop-color="#1f2e74" stop-opacity="0.92"/>
+              <stop offset="100%" stop-color="#2a1b5f" stop-opacity="0.92"/>
+            </linearGradient>
+          </defs>
+
+          <!-- Background panel (kept subtle; overall page provides the main bg) -->
+          <rect x="0" y="0" width="800" height="564" rx="34" fill="url(#nx_bg)" opacity="0.0"/>
+
+          <!-- Orb + networks -->
+          <g class="nx-float">
+            <!-- Orbits behind -->
+            <g class="nx-orbits" filter="url(#nx_glow)" opacity="0.78">
+              <path class="nx-orbit nx-orbit-1" d="M230 260 C 320 115, 520 115, 610 260 C 680 370, 610 440, 520 470 C 430 500, 350 480, 280 420 C 210 360, 200 325, 230 260 Z"
+                    fill="none" stroke="url(#nx_orbitStroke)" stroke-width="2.2" stroke-linecap="round"/>
+              <path class="nx-orbit nx-orbit-2" d="M210 300 C 265 190, 420 150, 555 195 C 690 240, 695 370, 590 430 C 485 490, 320 485, 235 405 C 150 325, 160 365, 210 300 Z"
+                    fill="none" stroke="url(#nx_orbitStroke)" stroke-width="1.8" stroke-linecap="round" opacity="0.75"/>
+            </g>
+
+            <!-- Orb shell -->
+            <g class="nx-orb-shell">
+              <circle cx="400" cy="276" r="176" fill="url(#nx_orb)"/>
+              <circle cx="400" cy="276" r="176" fill="none" stroke="url(#nx_orbStroke)" stroke-width="4.2" opacity="0.9" filter="url(#nx_glow)"/>
+              <circle cx="400" cy="276" r="164" fill="none" stroke="#38bdf8" stroke-opacity="0.16" stroke-width="1.2"/>
+              <circle cx="400" cy="276" r="150" fill="none" stroke="#a855f7" stroke-opacity="0.14" stroke-width="1"/>
+              <circle cx="400" cy="276" r="136" fill="none" stroke="#38bdf8" stroke-opacity="0.1" stroke-width="0.9"/>
+            </g>
+
+            <!-- Network inside orb -->
+            <g clip-path="url(#nx_clipOrb)" class="nx-network">
+              <g class="nx-net-rot">
+                <path d="M265 230 L 345 185 L 455 195 L 540 250 L 510 350 L 395 380 L 290 320 Z"
+                      fill="none" stroke="#7dd3fc" stroke-opacity="0.25" stroke-width="1.3"/>
+                <path d="M305 360 L 365 250 L 510 220 L 470 330 L 385 410 Z"
+                      fill="none" stroke="#a855f7" stroke-opacity="0.26" stroke-width="1.2"/>
+                <path d="M280 265 L 420 230 L 520 300 L 420 370 Z"
+                      fill="none" stroke="#38bdf8" stroke-opacity="0.18" stroke-width="1.2"/>
+                <path d="M330 205 L 420 320 L 520 250"
+                      fill="none" stroke="#a855f7" stroke-opacity="0.16" stroke-width="1.1"/>
+
+                <g class="nx-nodes">
+                  <circle cx="345" cy="185" r="4.2" fill="#7dd3fc"/>
+                  <circle cx="455" cy="195" r="3.6" fill="#a855f7"/>
+                  <circle cx="540" cy="250" r="4.0" fill="#38bdf8"/>
+                  <circle cx="510" cy="350" r="4.6" fill="#a855f7"/>
+                  <circle cx="395" cy="380" r="3.8" fill="#7dd3fc"/>
+                  <circle cx="290" cy="320" r="4.0" fill="#38bdf8"/>
+                  <circle cx="365" cy="250" r="3.2" fill="#ffffff" opacity="0.65"/>
+                  <circle cx="520" cy="300" r="3.2" fill="#ffffff" opacity="0.55"/>
+                </g>
+              </g>
+
+              <circle cx="400" cy="276" r="120" fill="none" stroke="#ffffff" stroke-opacity="0.06" stroke-width="1"/>
+            </g>
+
+            <!-- Orb shine -->
+            <g class="nx-shine" opacity="0.95">
+              <path d="M305 195 C 355 160, 465 160, 520 210"
+                    fill="none" stroke="#ffffff" stroke-opacity="0.18" stroke-width="10" stroke-linecap="round" filter="url(#nx_soft)"/>
+              <path d="M315 208 C 360 175, 455 176, 505 220"
+                    fill="none" stroke="#ffffff" stroke-opacity="0.22" stroke-width="3.6" stroke-linecap="round"/>
+            </g>
+
+            <!-- Center icon: microchip -->
+            <g class="nx-center" filter="url(#nx_glow)" transform="translate(400 276)" opacity="0.96">
+              <g class="nx-center-spin">
+                <!-- Pins (top) -->
+                <g fill="#ffffff">
+                  <rect x="-34" y="-74" width="16" height="22" rx="4"/>
+                  <rect x="-12" y="-74" width="16" height="22" rx="4"/>
+                  <rect x="10" y="-74" width="16" height="22" rx="4"/>
+                  <rect x="32" y="-74" width="16" height="22" rx="4"/>
+
+                  <!-- Pins (bottom) -->
+                  <rect x="-34" y="52" width="16" height="22" rx="4"/>
+                  <rect x="-12" y="52" width="16" height="22" rx="4"/>
+                  <rect x="10" y="52" width="16" height="22" rx="4"/>
+                  <rect x="32" y="52" width="16" height="22" rx="4"/>
+
+                  <!-- Pins (left) -->
+                  <rect x="-74" y="-34" width="22" height="16" rx="4"/>
+                  <rect x="-74" y="-12" width="22" height="16" rx="4"/>
+                  <rect x="-74" y="10" width="22" height="16" rx="4"/>
+                  <rect x="-74" y="32" width="22" height="16" rx="4"/>
+
+                  <!-- Pins (right) -->
+                  <rect x="52" y="-34" width="22" height="16" rx="4"/>
+                  <rect x="52" y="-12" width="22" height="16" rx="4"/>
+                  <rect x="52" y="10" width="22" height="16" rx="4"/>
+                  <rect x="52" y="32" width="22" height="16" rx="4"/>
+                </g>
+
+                <!-- Chip body -->
+                <rect x="-48" y="-48" width="96" height="96" rx="22" fill="none" stroke="#ffffff" stroke-width="10" stroke-opacity="0.96"/>
+                <rect x="-20" y="-20" width="40" height="40" rx="10" fill="none" stroke="#ffffff" stroke-width="8" stroke-opacity="0.96"/>
+              </g>
+            </g>
+
+            <!-- Pedestal -->
+            <g class="nx-pedestal" filter="url(#nx_glow)">
+              <ellipse cx="400" cy="482" rx="155" ry="34" fill="rgba(9,14,46,0.85)"/>
+              <ellipse cx="400" cy="482" rx="152" ry="32" fill="none" stroke="url(#nx_pedestal)" stroke-width="2" opacity="0.9"/>
+              <ellipse cx="400" cy="482" rx="120" ry="18" fill="none" stroke="#38bdf8" stroke-opacity="0.22" stroke-width="2"/>
+              <ellipse cx="400" cy="498" rx="190" ry="42" fill="rgba(56,189,248,0.10)" filter="url(#nx_soft)"/>
+              <path d="M400 440 C 408 462, 408 480, 400 492 C 392 480, 392 462, 400 440 Z"
+                    fill="rgba(56,189,248,0.22)" filter="url(#nx_soft)"/>
+            </g>
+          </g>
+
+          <!-- Pills -->
+          <g class="nx-pills" font-family="Manrope, system-ui, -apple-system, Segoe UI, sans-serif" font-weight="700">
+            <g class="nx-pill nx-pill-analyze" transform="translate(322 58)">
+              <rect x="0" y="0" width="156" height="44" rx="22" fill="url(#nx_pill)" stroke="url(#nx_orbStroke)" stroke-opacity="0.55"/>
+              <circle cx="26" cy="22" r="10" fill="#38bdf8" opacity="0.18"/>
+              <g transform="translate(26 22)">
+                <g class="nx-pill-icon nx-icon-analyze">
+                  <circle cx="-2" cy="-2" r="6.6"/>
+                  <path d="M2.8 2.8 L8.2 8.2"/>
+                  <circle cx="6.6" cy="-7.8" r="1.4" fill="#ffffff" opacity="0.55" stroke="none"/>
+                </g>
+              </g>
+              <text x="44" y="28" font-size="16" fill="#ffffff" opacity="0.96">Analyze</text>
+            </g>
+
+            <g class="nx-pill nx-pill-ideate" transform="translate(78 238)">
+              <rect x="0" y="0" width="148" height="44" rx="22" fill="url(#nx_pill)" stroke="url(#nx_orbStroke)" stroke-opacity="0.35"/>
+              <circle cx="26" cy="22" r="10" fill="#a855f7" opacity="0.18"/>
+              <g transform="translate(26 22)">
+                <g class="nx-pill-icon nx-icon-ideate">
+                  <path d="M-6 -1.8 C-6 -7.6 6 -7.6 6 -1.8 C6 1.6 4 3.6 2.6 4.9 C1.5 5.9 1 6.8 1 8 H-1 C-1 6.8 -1.5 5.9 -2.6 4.9 C-4 3.6 -6 1.6 -6 -1.8 Z"/>
+                  <path d="M-2 8 H2"/>
+                  <path d="M-3.2 10.6 H3.2"/>
+                  <path d="M0 -10.2 V-8.4"/>
+                  <path d="M-8.8 -6.8 L-7.4 -5.6"/>
+                  <path d="M8.8 -6.8 L7.4 -5.6"/>
+                </g>
+              </g>
+              <text x="44" y="28" font-size="16" fill="#ffffff" opacity="0.96">Ideate</text>
+            </g>
+
+            <g class="nx-pill nx-pill-build" transform="translate(574 238)">
+              <rect x="0" y="0" width="148" height="44" rx="22" fill="url(#nx_pill)" stroke="url(#nx_orbStroke)" stroke-opacity="0.35"/>
+              <circle cx="26" cy="22" r="10" fill="#38bdf8" opacity="0.18"/>
+              <g transform="translate(26 22)">
+                <g class="nx-pill-icon nx-icon-build">
+                  <rect x="-7.5" y="-7.5" width="10" height="7.2" rx="2.2"/>
+                  <path d="M-1.2 -2.6 L7.6 6.2"/>
+                  <path d="M6.2 7.6 L9.2 4.6"/>
+                  <path d="M-7.4 -4.2 H2.2"/>
+                </g>
+              </g>
+              <text x="44" y="28" font-size="16" fill="#ffffff" opacity="0.96">Build</text>
+            </g>
+
+            <g class="nx-pill nx-pill-learn" transform="translate(134 420)">
+              <rect x="0" y="0" width="140" height="44" rx="22" fill="url(#nx_pill)" stroke="url(#nx_orbStroke)" stroke-opacity="0.28"/>
+              <circle cx="26" cy="22" r="10" fill="#38bdf8" opacity="0.18"/>
+              <g transform="translate(26 22)">
+                <g class="nx-pill-icon nx-icon-learn">
+                  <path d="M-7.6 -6.6 H0 V7.2 H-7.6 Z"/>
+                  <path d="M0 -6.6 H7.6 V7.2 H0 Z"/>
+                  <path d="M0 -6.6 V7.2"/>
+                  <path d="M-5.4 -3.8 H-1.2"/>
+                  <path d="M1.2 -3.8 H5.4"/>
+                </g>
+              </g>
+              <text x="44" y="28" font-size="16" fill="#ffffff" opacity="0.96">Learn</text>
+            </g>
+
+            <g class="nx-pill nx-pill-grow" transform="translate(526 420)">
+              <rect x="0" y="0" width="140" height="44" rx="22" fill="url(#nx_pill)" stroke="url(#nx_orbStroke)" stroke-opacity="0.28"/>
+              <circle cx="26" cy="22" r="10" fill="#a855f7" opacity="0.18"/>
+              <g transform="translate(26 22)">
+                <g class="nx-pill-icon nx-icon-grow">
+                  <path d="M0 8 V-1.6"/>
+                  <path d="M0 -1.6 C-1.2 -7.4 -7.8 -6.8 -8.8 -2.2 C-9.6 1.8 -3.8 2.8 0 -1.6 Z"/>
+                  <path d="M0 -1.6 C1.2 -7.4 7.8 -6.8 8.8 -2.2 C9.6 1.8 3.8 2.8 0 -1.6 Z"/>
+                  <path d="M-1.6 8 H1.6"/>
+                </g>
+              </g>
+              <text x="44" y="28" font-size="16" fill="#ffffff" opacity="0.96">Grow</text>
+            </g>
+          </g>
+
+          <!-- External connectors -->
+          <g class="nx-connectors" filter="url(#nx_glow)" opacity="0.75">
+            <path d="M398 100 L 398 146" stroke="#38bdf8" stroke-opacity="0.32" stroke-width="1.4"/>
+            <path d="M226 260 L 286 260" stroke="#a855f7" stroke-opacity="0.24" stroke-width="1.2"/>
+            <path d="M514 260 L 574 260" stroke="#38bdf8" stroke-opacity="0.24" stroke-width="1.2"/>
+            <path d="M268 442 L 310 416" stroke="#38bdf8" stroke-opacity="0.22" stroke-width="1.2"/>
+            <path d="M532 416 L 574 442" stroke="#a855f7" stroke-opacity="0.22" stroke-width="1.2"/>
+
+            <circle cx="398" cy="146" r="3.4" fill="#7dd3fc"/>
+            <circle cx="286" cy="260" r="3.0" fill="#a855f7"/>
+            <circle cx="514" cy="260" r="3.0" fill="#38bdf8"/>
+            <circle cx="310" cy="416" r="3.0" fill="#38bdf8"/>
+            <circle cx="532" cy="416" r="3.0" fill="#a855f7"/>
+          </g>
+        </svg>
+      </div>
+    </div>
+  </div>
+  </div>
+
+<div class="home-shapes-bg" style="position: fixed; top: 500px; left: 0; right: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0;" aria-hidden="true">
+  <svg class="shapes-svg" viewBox="0 0 1400 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" style="animation: shapeFloat 8s ease-in-out infinite;">
+    <defs>
+      <radialGradient id="sg1" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#f472b6" stop-opacity="0.28"/>
+        <stop offset="100%" stop-color="#f472b6" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="sg2" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.25"/>
+        <stop offset="100%" stop-color="#38bdf8" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="sg3" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#34d399" stop-opacity="0.22"/>
+        <stop offset="100%" stop-color="#34d399" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="sg4" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#fb923c" stop-opacity="0.22"/>
+        <stop offset="100%" stop-color="#fb923c" stop-opacity="0"/>
+      </radialGradient>
+      <filter id="glow">
+        <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+        <feMerge>
+          <feMergeNode in="coloredBlur"/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+    </defs>
+    <!-- Top-right pink sphere -->
+    <ellipse cx="1300" cy="120" rx="160" ry="160" fill="url(#sg1)" style="animation: shapeGlow 3s ease-in-out infinite;" filter="url(#glow)"/>
+    <ellipse cx="1300" cy="120" rx="110" ry="110" fill="#fce7f3" opacity="0.42" style="animation: shimmerOverlay 4s ease-in-out infinite;"/>
+    <ellipse cx="1268" cy="92" rx="42" ry="28" fill="#fff" opacity="0.28"/>
+    <!-- Top-right sky-blue pill -->
+    <rect x="1100" y="160" width="75" height="230" rx="37" fill="#7dd3fc" opacity="0.28" transform="rotate(30 1137 275)" style="animation: shapeFloat 6s ease-in-out infinite 0.5s;"/>
+    <!-- Bottom-left sky-blue sphere -->
+    <ellipse cx="80" cy="680" rx="140" ry="140" fill="url(#sg2)" style="animation: shapeGlow 4s ease-in-out infinite 1s;" filter="url(#glow)"/>
+    <ellipse cx="80" cy="680" rx="95" ry="95" fill="#bae6fd" opacity="0.35"/>
+    <ellipse cx="55" cy="655" rx="34" ry="22" fill="#fff" opacity="0.26"/>
+    <!-- Left orange/peach pill -->
+    <rect x="-80" y="530" width="300" height="80" rx="40" fill="#fdba74" opacity="0.26" transform="rotate(-15 70 570)" style="animation: shapeFloat 7s ease-in-out infinite 1.5s;"/>
+    <!-- Center-left mint glass sphere -->
+    <ellipse cx="370" cy="490" rx="58" ry="58" fill="url(#sg3)" style="animation: shapeGlow 3.5s ease-in-out infinite 0.8s;" filter="url(#glow)"/>
+    <ellipse cx="370" cy="490" rx="40" ry="40" fill="#a7f3d0" opacity="0.30" style="animation: shimmerOverlay 5s ease-in-out infinite 0.3s;"/>
+    <ellipse cx="354" cy="474" rx="15" ry="10" fill="#fff" opacity="0.33"/>
+    <!-- Bottom-right lime pill -->
+    <rect x="1050" y="620" width="340" height="95" rx="47" fill="#a3e635" opacity="0.20" transform="rotate(-20 1220 667)" style="animation: shapeFloat 8s ease-in-out infinite 1.2s;"/>
+    <!-- Bottom-right coral sphere -->
+    <ellipse cx="1360" cy="820" rx="130" ry="130" fill="url(#sg4)" style="animation: shapeGlow 4.5s ease-in-out infinite 1.5s;" filter="url(#glow)"/>
+    <ellipse cx="1360" cy="820" rx="90" ry="90" fill="#fed7aa" opacity="0.32" style="animation: shimmerOverlay 6s ease-in-out infinite 0.6s;"/>
+    <!-- Top-center fuchsia glow blob -->
+    <ellipse cx="200" cy="300" rx="220" ry="80" fill="#e879f9" opacity="0.10" style="animation: shimmerOverlay 5s ease-in-out infinite;"/>
+  </svg>
+</div>
+
+<div class="container py-5 section-clouds position-relative" style="position: relative; z-index: 1;">
+  <div class="section-cloud section-cloud-1"></div>
+  <div class="section-cloud section-cloud-2"></div>
+  <div class="section-cloud section-cloud-3"></div>
+  
+  <div class="text-center mb-5 fade-in-on-scroll">
+    <h2 class="fw-bold">Everything You Need to Get Hired</h2>
+    <p class="text-muted">Two powerful tools. One professional platform.</p>
+  </div>
+  <div class="row g-4">
+    <div class="col-md-6 fade-in-on-scroll" style="animation-delay: 0.2s;">
+      <div class="card h-100 p-4 glow-effect home-feature-card-light" style="border-top:4px solid #4f46e5;">
+        <div class="d-flex align-items-center gap-3 mb-3">
+          <div class="feature-icon bg-primary bg-opacity-10" style="width:52px;height:52px;margin:0;border-radius:14px;flex-shrink:0;">
+            <i class="bi bi-bar-chart-fill text-primary fs-4"></i>
+          </div>
+          <div>
+            <h5 class="fw-bold mb-0">Skill Gap Analyser</h5>
+            <span class="text-muted small">Intelligent skill comparison</span>
+          </div>
+        </div>
+        <p class="text-muted small">Enter your skills and target job role. Our intelligent system uses semantic NLP to compare your profile with industry requirements — detecting similar skills like JS ≈ JavaScript, SQL ≈ MySQL.</p>
+        <ul class="text-muted small list-unstyled mb-3">
+          <li class="mb-1"><i class="bi bi-check-circle-fill text-success me-2"></i>Matches semantically similar skills</li>
+          <li class="mb-1"><i class="bi bi-check-circle-fill text-success me-2"></i>Shows Strong / Moderate / Weak categorization</li>
+          <li class="mb-1"><i class="bi bi-check-circle-fill text-success me-2"></i>Identifies exact missing skills</li>
+          <li class="mb-1"><i class="bi bi-check-circle-fill text-success me-2"></i>Downloadable PDF report</li>
+        </ul>
+        <a href="{{ url_for('skill_analysis') if session.get('user_id') else url_for('register') }}" class="btn btn-primary fw-bold">
+          <i class="bi bi-bar-chart me-2"></i>Analyse Skills
+        </a>
+      </div>
+    </div>
+    <div class="col-md-6 fade-in-on-scroll" style="animation-delay: 0.3s;">
+      <div class="card h-100 p-4 glow-effect home-feature-card-light" style="border-top:4px solid #8B5CF6;">
+        <div class="d-flex align-items-center gap-3 mb-3">
+          <div class="feature-icon" style="width:52px;height:52px;margin:0;border-radius:14px;flex-shrink:0;background:rgba(139,92,246,0.12);">
+            <i class="bi bi-mic-fill fs-4" style="color:#8B5CF6;"></i>
+          </div>
+          <div>
+            <h5 class="fw-bold mb-0">Mock Interview Trainer</h5>
+            <span class="text-muted small">AI-based answer evaluation</span>
+          </div>
+        </div>
+        <p class="text-muted small">Practice with real interview questions across 5 categories. Our AI evaluates your answers by meaning — not word count. Validates originality of answers automatically and gives structured feedback.</p>
+        <ul class="text-muted small list-unstyled mb-3">
+          <li class="mb-1"><i class="bi bi-check-circle-fill text-success me-2"></i>5 categories: Technical, HR, DSA, Database, Soft Skills</li>
+          <li class="mb-1"><i class="bi bi-check-circle-fill text-success me-2"></i>Voice or text input</li>
+          <li class="mb-1"><i class="bi bi-check-circle-fill text-success me-2"></i>Unique response validation</li>
+          <li class="mb-1"><i class="bi bi-check-circle-fill text-success me-2"></i>Full analytics after 10 questions</li>
+        </ul>
+        <a href="{{ url_for('select_category') if session.get('user_id') else url_for('register') }}" class="btn btn-primary fw-bold" style="background:linear-gradient(135deg,#8B5CF6,#6D28D9);border:none;">
+          <i class="bi bi-mic me-2"></i>Start Interview
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="py-5 section-clouds position-relative home-how-section">
+  <div class="section-cloud section-cloud-1" style="background: radial-gradient(circle, rgba(59, 130, 246, 0.2), transparent);"></div>
+  <div class="section-cloud section-cloud-2" style="background: radial-gradient(circle, rgba(34, 197, 94, 0.15), transparent);"></div>
+  
+  <div class="container">
+    <div class="text-center mb-5 fade-in-on-scroll">
+      <h2 class="fw-bold">How It Works</h2>
+      <p class="text-muted">Three simple steps to better interview performance</p>
+    </div>
+    <div class="row g-4 justify-content-center">
+      <div class="col-md-4 text-center fade-in-on-scroll" style="animation-delay: 0.2s;">
+        <div class="step-circle scale-in visible">1</div>
+        <h5 class="fw-bold">Enter Your Profile</h5>
+        <p class="text-muted small">Add your skills and choose your target job role. Our system supports 15+ professional roles across multiple domains.</p>
+      </div>
+      <div class="col-md-4 text-center fade-in-on-scroll" style="animation-delay: 0.3s;">
+        <div class="step-circle scale-in visible">2</div>
+        <h5 class="fw-bold">AI Analyses Your Gap</h5>
+        <p class="text-muted small">Advanced NLP-based matching compares your skills semantically — understanding that JS equals JavaScript and MySQL equals SQL.</p>
+      </div>
+      <div class="col-md-4 text-center fade-in-on-scroll" style="animation-delay: 0.4s;">
+        <div class="step-circle scale-in visible">3</div>
+        <h5 class="fw-bold">Get Actionable Report</h5>
+        <p class="text-muted small">Receive a colour-coded dashboard with matched skills, missing skills, score percentage, and a downloadable PDF report.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container py-5 section-clouds position-relative home-categories-section">
+  <div class="section-cloud section-cloud-1"></div>
+  <div class="section-cloud section-cloud-3"></div>
+  
+  <div class="text-center mb-5 fade-in-on-scroll">
+    <h2 class="fw-bold">Interview Categories</h2>
+    <p class="text-muted">Choose the category that matches your interview</p>
+  </div>
+  <div class="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-3 justify-content-center">
+    {% for name, info in categories.items() %}
+    <div class="col fade-in-on-scroll" style="animation-delay: {{ loop.index0 * 0.1 }}s;">
+      <div class="card h-100 text-center border-0 shadow-sm glow-effect" style="border-radius:16px;">
+        <div class="card-body py-4 px-2">
+          <div class="mx-auto mb-3 d-flex align-items-center justify-content-center bg-{{ info.color }} bg-opacity-10 rounded-3"
+               style="width:56px;height:56px;">
+            <i class="bi {{ info.icon }} text-{{ info.color }} fs-3"></i>
+          </div>
+          <h6 class="fw-bold mb-1" style="font-size:0.9rem;">{{ name }}</h6>
+          <p class="text-muted mb-0" style="font-size:0.75rem;line-height:1.4;">{{ info.desc }}</p>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<div class="py-5 home-why-section">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2 class="fw-bold">Why SkillGap AI?</h2>
+      <p class="text-muted">Intelligent features built for serious interview prep</p>
+    </div>
+    <div class="row g-4">
+      <div class="col-md-3">
+        <div class="card feature-card h-100 p-3 text-center">
+          <div class="feature-icon bg-primary bg-opacity-10"><i class="bi bi-cpu-fill text-primary fs-4"></i></div>
+          <h6 class="fw-bold">AI-Powered Answer Evaluation</h6>
+          <p class="text-muted small">Evaluates the quality and relevance of your answers using intelligent semantic analysis, giving you accurate feedback on every response.</p>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card feature-card h-100 p-3 text-center">
+          <div class="feature-icon bg-danger bg-opacity-10"><i class="bi bi-shield-fill-check text-danger fs-4"></i></div>
+          <h6 class="fw-bold">Originality Verification</h6>
+          <p class="text-muted small">Validates that each answer is unique and original. Every question requires a fresh, relevant response.</p>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card feature-card h-100 p-3 text-center">
+          <div class="feature-icon bg-warning bg-opacity-10"><i class="bi bi-bar-chart-fill text-warning fs-4"></i></div>
+          <h6 class="fw-bold">Detailed Analytics</h6>
+          <p class="text-muted small">Full performance breakdown after all 10 questions with confidence scores and semantic relevance ratings.</p>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card feature-card h-100 p-3 text-center">
+          <div class="feature-icon bg-success bg-opacity-10"><i class="bi bi-mic-fill text-success fs-4"></i></div>
+          <h6 class="fw-bold">Voice Input</h6>
+          <p class="text-muted small">Speak naturally. Speech-to-text converts your verbal answer for AI analysis automatically.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="py-5 home-feedback-section" id="feedback-section">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-12 col-md-10 col-lg-7">
+        <div class="text-center mb-4">
+          <h2 class="fw-bold">Share Your Feedback</h2>
+          <p class="text-muted">Help us improve SkillGap AI — your feedback goes directly to our team</p>
+        </div>
+        <div class="card shadow-sm">
+          <div class="card-body p-3 p-sm-4">
+            <div class="mb-4 text-center">
+              <label class="form-label fw-semibold d-block mb-2">How would you rate your experience?</label>
+              <div class="d-flex justify-content-center gap-2 flex-wrap" id="star-container">
+                {% for i in range(1,6) %}
+                <i class="bi bi-star-fill star-btn" data-value="{{ i }}" style="cursor:pointer;"></i>
+                {% endfor %}
+              </div>
+              <input type="hidden" id="rating-value" value="0"/>
+              <small id="rating-label" class="text-muted mt-1 d-block">Click to rate</small>
+            </div>
+            <div class="row g-3 mb-3">
+              <div class="col-12 col-sm-6">
+                <label class="form-label fw-semibold">Your Name <span class="text-muted">(optional)</span></label>
+                <input type="text" id="fb-name" class="form-control" placeholder="Enter your name"/>
+              </div>
+              <div class="col-12 col-sm-6">
+                <label class="form-label fw-semibold">Email <span class="text-muted">(optional)</span></label>
+                <input type="email" id="fb-email" class="form-control" placeholder="your@email.com"/>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Feedback Category</label>
+              <select id="fb-category" class="form-select">
+                <option value="General">General</option>
+                <option value="Interview Questions">Interview Questions</option>
+                <option value="AI Analysis Accuracy">AI Analysis Accuracy</option>
+                <option value="UI / Design">UI / Design</option>
+                <option value="Bug Report">Bug Report</option>
+                <option value="Feature Request">Feature Request</option>
+              </select>
+            </div>
+            <div class="mb-4">
+              <label class="form-label fw-semibold">Your Message <span class="text-danger">*</span></label>
+              <textarea id="fb-message" class="form-control" rows="4"
+                        placeholder="Share your experience, suggestions, or report any issues..."></textarea>
+            </div>
+            <button type="button" id="fb-submit" class="btn btn-primary w-100 py-2 fw-bold">
+              <i class="bi bi-send-fill me-2"></i>Submit Feedback
+            </button>
+            <div id="fb-success" class="alert alert-success mt-3 d-none">
+              <i class="bi bi-check-circle-fill me-2"></i>Thank you! Your feedback has been received.
+            </div>
+            <div id="fb-error" class="alert alert-danger mt-3 d-none"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+const stars = document.querySelectorAll('.star-btn');
+const ratingInput = document.getElementById('rating-value');
+const ratingLabel = document.getElementById('rating-label');
+const ratingLabels = ['','Poor','Fair','Good','Very Good','Excellent'];
+
+function updateStars(value) {
+  stars.forEach((s, i) => {
+    if (i < value) {
+      s.classList.add('active');
+    } else {
+      s.classList.remove('active');
+    }
+  });
+}
+
+stars.forEach(star => {
+  star.addEventListener('mouseover', () => {
+    const v = parseInt(star.dataset.value);
+    updateStars(v);
+  });
+  star.addEventListener('mouseout', () => {
+    const cur = parseInt(ratingInput.value);
+    updateStars(cur);
+  });
+  star.addEventListener('click', () => {
+    const v = parseInt(star.dataset.value);
+    ratingInput.value = v;
+    ratingLabel.textContent = ratingLabels[v];
+    updateStars(v);
+  });
+});
+
+document.getElementById('fb-submit').addEventListener('click', async () => {
+  const rating  = parseInt(document.getElementById('rating-value').value);
+  const message = document.getElementById('fb-message').value.trim();
+  const errDiv  = document.getElementById('fb-error');
+  const sucDiv  = document.getElementById('fb-success');
+  errDiv.classList.add('d-none');
+  sucDiv.classList.add('d-none');
+
+  if (rating < 1) { errDiv.textContent = 'Please select a star rating.'; errDiv.classList.remove('d-none'); return; }
+  if (!message)   { errDiv.textContent = 'Please write a message.';       errDiv.classList.remove('d-none'); return; }
+
+  const btn = document.getElementById('fb-submit');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Submitting...';
+
+  try {
+    const res  = await fetch('/submit_feedback', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        name: document.getElementById('fb-name').value.trim(),
+        email: document.getElementById('fb-email').value.trim(),
+        rating, category: document.getElementById('fb-category').value, message,
+      })
+    });
+    if (!res.ok && res.status !== 400) {
+      throw new Error(`Server error: ${res.status}`);
+    }
+    const data = await res.json();
+    if (data.success) {
+      sucDiv.classList.remove('d-none');
+      document.getElementById('fb-message').value = '';
+      document.getElementById('fb-name').value = '';
+      document.getElementById('fb-email').value = '';
+      ratingInput.value = '0';
+      updateStars(0);
+      ratingLabel.textContent = 'Click to rate';
+    } else {
+      errDiv.textContent = data.error || 'Something went wrong.';
+      errDiv.classList.remove('d-none');
+    }
+  } catch (err) {
+    errDiv.textContent = 'Network error. Please check your connection and try again.';
+    errDiv.classList.remove('d-none');
+    console.error('Feedback submission error:', err);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="bi bi-send-fill me-2"></i>Submit Feedback';
+  }
+});
+
+// Initialize Lottie animation for thinking/learning figure
+  // const thinkingAnimation = {
+  //   v: "5.5.2", fr: 30, ip: 0, op: 120, w: 300, h: 400,
+  //   layers: [
+  //     {
+  //       nm: "Head", ty: 4, sr: 1, st: 0, en: 120, ip: 0, op: 120,
+  //       shapes: [
+  //         { ty: "el", d: 1, s: [60, 60], p: [150, 100] },
+  //         { ty: "st", o: { k: 100 }, w: { k: 2 }, lc: 2, lj: 2, ml: 10 }
+  //       ]
+  //     },
+  //     {
+  //       nm: "Body", ty: 4, sr: 1, st: 0, en: 120, ip: 0, op: 120,
+  //       shapes: [
+  //         { ty: "sh", cr: false, ks: { k: { c: false, v: [[150, 160], [120, 220], [180, 220]], i: [[0, 0], [0, 0], [0, 0]], o: [[0, 0], [0, 0], [0, 0]], closed: true] } },
+  //         { ty: "fl", c: { k: [1, 1, 1, 0.95] }, o: { k: 100 } }
+  //       ]
+  //     },
+  //     {
+  //       nm: "Thought Bubble", ty: 4, sr: 1, st: 10, en: 110, ip: 0, op: 120, ao: 0, ks: { o: { k: [{ t: 0, s: [0] }, { t: 30, s: [100] }, { t: 90, s: [100] }, { t: 120, s: [0] }] }, p: { k: [220, { t: 0, s: [110], v: [0, -3], i: [0.33, 0.67], o: [0.67, 0.33] }, { t: 60, s: [100] }, { t: 120, s: [110] }] } },
+  //       shapes: [
+  //         { ty: "el", s: { k: [70, 50] }, p: { k: [0, 0] } },
+  //         { ty: "fl", c: { k: [1, 1, 1, 0.9] }, o: { k: 100 } },
+  //         { ty: "st", o: { k: 100 }, w: { k: 2 } }
+  //       ]
+  //     },
+  //     {
+  //       nm: "Lightbulb", ty: 4, sr: 1, st: 30, en: 100, ip: 0, op: 120, ks: { o: { k: [{ t: 0, s: [0] }, { t: 30, s: [80] }, { t: 90, s: [80] }, { t: 120, s: [0] }] } },
+  //       shapes: [
+  //         { ty: "el", s: { k: [20, 25] }, p: { k: [220, 100] } },
+  //         { ty: "fl", c: { k: [1, 0.85, 0, 1] }, o: { k: 100 } }
+  //       ]
+  //     }
+  //   ]
+  // };
+
+  // if (typeof lottie !== 'undefined') {
+  //   lottie.loadAnimation({
+  //     container: document.getElementById('lottie-thinking'),
+  //     renderer: 'svg',
+  //     loop: true,
+  //     autoplay: true,
+  //     animationData: thinkingAnimation
+  //   });
+  // }
+
+  // ── Dynamic Loop Animation for Hero Head ──────────────────────────────────
+  // (Hero illustration animation handled via CSS)
+});
+</script>
+{% endblock %}

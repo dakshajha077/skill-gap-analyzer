@@ -1,0 +1,173 @@
+{#
+  Reusable Chatbot Component — Feature 1
+  Include with: {% include 'chatbot_component.html' %}
+  Requires:
+    - chatbot_mode: "session" or "dashboard"
+    - chatbot_context_json: JSON string of context data
+    - chatbot_title: display title string
+#}
+<div class="card p-0 mb-4" id="chatbotCard" style="border-top:4px solid var(--primary);overflow:hidden;">
+  <!-- Header -->
+  <div style="background:linear-gradient(135deg,#4f46e5,#06b6d4);padding:1rem 1.5rem;cursor:pointer;"
+       onclick="toggleChatbot()">
+    <div class="d-flex align-items-center justify-content-between">
+      <div class="d-flex align-items-center gap-2">
+        <div style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;">
+          <i class="bi bi-robot text-white" style="font-size:1.1rem;"></i>
+        </div>
+        <div>
+          <div style="color:white;font-weight:700;font-size:0.95rem;">{{ chatbot_title }}</div>
+          <div style="color:rgba(255,255,255,0.75);font-size:0.75rem;">Ask about performance, skills, or the platform</div>
+        </div>
+      </div>
+      <i class="bi bi-chevron-down text-white" id="chatbotToggleIcon" style="transition:transform 0.2s;"></i>
+    </div>
+  </div>
+
+  <!-- Chat Body -->
+  <div id="chatbotBody" style="display:none;">
+    <!-- Suggestion Pills -->
+    <div style="padding:1rem 1.5rem 0.5rem;border-bottom:1px solid var(--border);">
+      <p class="text-muted small mb-2">Quick questions:</p>
+      <div class="d-flex gap-2 flex-wrap" id="suggestionPills">
+        {% if chatbot_mode == 'session' %}
+          <button class="pill pill-primary" onclick="sendSuggestion('How can I improve my score?')">How can I improve?</button>
+          <button class="pill pill-warning" onclick="sendSuggestion('Why is my score low?')">Why is my score low?</button>
+          <button class="pill pill-success" onclick="sendSuggestion('What should I learn next?')">What to learn next?</button>
+          <button class="pill pill-info" onclick="sendSuggestion('What are my strengths?')">My strengths?</button>
+        {% else %}
+          <button class="pill pill-primary" onclick="sendSuggestion('What is SkillGap Analyzer?')">About the platform</button>
+          <button class="pill pill-warning" onclick="sendSuggestion('How does skill analysis work?')">How skill analysis works</button>
+          <button class="pill pill-success" onclick="sendSuggestion('What courses should I take?')">Course recommendations</button>
+          <button class="pill pill-info" onclick="sendSuggestion('How do I reach the next level?')">Next level tips</button>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Message History -->
+    <div id="chatMessages"
+         style="height:280px;overflow-y:auto;padding:1rem 1.5rem;display:flex;flex-direction:column;gap:10px;">
+      <div class="chat-msg bot">
+        <div class="chat-bubble bot-bubble">
+          <i class="bi bi-robot me-1" style="font-size:0.8rem;"></i>
+          {% if chatbot_mode == 'session' %}
+            Hi! I'm your AI coach. I've reviewed your session results and I'm ready to help you improve. I can also answer questions about the SkillGap platform and its features. What would you like to know?
+          {% else %}
+            Hello! I'm your SkillGap AI assistant. I can help with performance analysis, answer questions about the platform, and provide career guidance. How can I assist you today?
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Input Row -->
+    <div class="chatbot-input-row" style="padding:0.75rem 1.5rem;border-top:1px solid var(--border);background:#f8faff;">
+      <div class="d-flex gap-2">
+        <input type="text" id="chatInput"
+               class="form-control form-control-sm"
+               placeholder="Ask about performance, skills, platform features..."
+               onkeydown="if(event.key==='Enter') sendChat()"
+               style="border-radius:20px;font-size:0.88rem;">
+        <button class="btn btn-primary btn-sm px-3" onclick="sendChat()" id="chatSendBtn"
+                style="border-radius:20px;white-space:nowrap;">
+          <i class="bi bi-send-fill"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  // Encapsulate chatbot state
+  const CHATBOT_MODE    = '{{ chatbot_mode }}';
+  const CHATBOT_CONTEXT = {{ chatbot_context_json | safe }};
+  let chatHistory = [];
+  let isOpen = false;
+
+  window.toggleChatbot = function() {
+    isOpen = !isOpen;
+    document.getElementById('chatbotBody').style.display = isOpen ? 'block' : 'none';
+    const icon = document.getElementById('chatbotToggleIcon');
+    icon.style.transform = isOpen ? 'rotate(180deg)' : 'rotate(0deg)';
+    if (isOpen) {
+      setTimeout(() => document.getElementById('chatInput').focus(), 100);
+    }
+  };
+
+  window.sendSuggestion = function(text) {
+    document.getElementById('chatInput').value = text;
+    sendChat();
+  };
+
+  window.sendChat = async function() {
+    const input = document.getElementById('chatInput');
+    const msg   = input.value.trim();
+    if (!msg) return;
+
+    input.value = '';
+    appendMessage(msg, 'user');
+    chatHistory.push({ role: 'user', content: msg });
+
+    // Show typing indicator
+    const typingId = appendTyping();
+    document.getElementById('chatSendBtn').disabled = true;
+
+    try {
+      const res  = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: msg,
+          context: CHATBOT_CONTEXT,
+          history: chatHistory.slice(-10),  // keep last 10 turns
+          mode: CHATBOT_MODE
+        })
+      });
+      const data = await res.json();
+      removeTyping(typingId);
+      const reply = data.reply || data.error || 'Sorry, I could not process that.';
+      appendMessage(reply, 'bot');
+      chatHistory.push({ role: 'assistant', content: reply });
+    } catch(e) {
+      removeTyping(typingId);
+      appendMessage('Sorry, there was a connection error. Please try again.', 'bot');
+    } finally {
+      document.getElementById('chatSendBtn').disabled = false;
+    }
+  };
+
+  function appendMessage(text, role) {
+    const container = document.getElementById('chatMessages');
+    const div = document.createElement('div');
+    div.className = `chat-msg ${role}`;
+    div.innerHTML = `<div class="chat-bubble ${role}-bubble">${
+      role === 'bot' ? '<i class="bi bi-robot me-1" style="font-size:0.8rem;"></i>' : ''
+    }${escapeHtml(text)}</div>`;
+    container.appendChild(div);
+    container.scrollTop = container.scrollHeight;
+  }
+
+  function appendTyping() {
+    const id = 'typing_' + Date.now();
+    const container = document.getElementById('chatMessages');
+    const div = document.createElement('div');
+    div.id = id;
+    div.className = 'chat-msg bot';
+    div.innerHTML = `<div class="chat-bubble bot-bubble">
+      <span class="typing-dots"><span></span><span></span><span></span></span>
+    </div>`;
+    container.appendChild(div);
+    container.scrollTop = container.scrollHeight;
+    return id;
+  }
+
+  function removeTyping(id) {
+    const el = document.getElementById(id);
+    if (el) el.remove();
+  }
+
+  function escapeHtml(text) {
+    return text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+})();
+</script>

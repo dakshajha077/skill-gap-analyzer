@@ -1,0 +1,829 @@
+{% extends 'base.html' %}
+{% block title %}Results – SkillGap AI{% endblock %}
+{% block body_class %}dashboard-bg{% endblock %}
+{% block content %}
+
+<div class="results-shapes-bg" style="position: fixed; top: 0; left: 0; right: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0;" aria-hidden="true">
+  <svg class="shapes-svg" viewBox="0 0 1400 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" style="animation: shapeFloat 8s ease-in-out infinite;">
+    <defs>
+      <radialGradient id="sg1" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#f472b6" stop-opacity="0.28"/>
+        <stop offset="100%" stop-color="#f472b6" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="sg2" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.25"/>
+        <stop offset="100%" stop-color="#38bdf8" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="sg3" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#34d399" stop-opacity="0.22"/>
+        <stop offset="100%" stop-color="#34d399" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="sg4" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#fb923c" stop-opacity="0.22"/>
+        <stop offset="100%" stop-color="#fb923c" stop-opacity="0"/>
+      </radialGradient>
+      <filter id="glow">
+        <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+        <feMerge>
+          <feMergeNode in="coloredBlur"/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+    </defs>
+    <ellipse cx="1300" cy="120" rx="160" ry="160" fill="url(#sg1)" style="animation: shapeGlow 3s ease-in-out infinite;" filter="url(#glow)"/>
+    <ellipse cx="1300" cy="120" rx="110" ry="110" fill="#fce7f3" opacity="0.42" style="animation: shimmerOverlay 4s ease-in-out infinite;"/>
+    <ellipse cx="1268" cy="92" rx="42" ry="28" fill="#fff" opacity="0.28"/>
+    <rect x="1100" y="160" width="75" height="230" rx="37" fill="#7dd3fc" opacity="0.28" transform="rotate(30 1137 275)" style="animation: shapeFloat 6s ease-in-out infinite 0.5s;"/>
+    <ellipse cx="80" cy="680" rx="140" ry="140" fill="url(#sg2)" style="animation: shapeGlow 4s ease-in-out infinite 1s;" filter="url(#glow)"/>
+    <ellipse cx="80" cy="680" rx="95" ry="95" fill="#bae6fd" opacity="0.35"/>
+    <ellipse cx="55" cy="655" rx="34" ry="22" fill="#fff" opacity="0.26"/>
+    <rect x="-80" y="530" width="300" height="80" rx="40" fill="#fdba74" opacity="0.26" transform="rotate(-15 70 570)" style="animation: shapeFloat 7s ease-in-out infinite 1.5s;"/>
+    <ellipse cx="370" cy="490" rx="58" ry="58" fill="url(#sg3)" style="animation: shapeGlow 3.5s ease-in-out infinite 0.8s;" filter="url(#glow)"/>
+    <ellipse cx="370" cy="490" rx="40" ry="40" fill="#a7f3d0" opacity="0.30" style="animation: shimmerOverlay 5s ease-in-out infinite 0.3s;"/>
+    <ellipse cx="354" cy="474" rx="15" ry="10" fill="#fff" opacity="0.33"/>
+    <rect x="1050" y="620" width="340" height="95" rx="47" fill="#a3e635" opacity="0.20" transform="rotate(-20 1220 667)" style="animation: shapeFloat 8s ease-in-out infinite 1.2s;"/>
+    <ellipse cx="1360" cy="820" rx="130" ry="130" fill="url(#sg4)" style="animation: shapeGlow 4.5s ease-in-out infinite 1.5s;" filter="url(#glow)"/>
+    <ellipse cx="1360" cy="820" rx="90" ry="90" fill="#fed7aa" opacity="0.32" style="animation: shimmerOverlay 6s ease-in-out infinite 0.6s;"/>
+    <ellipse cx="200" cy="300" rx="220" ry="80" fill="#e879f9" opacity="0.10" style="animation: shimmerOverlay 5s ease-in-out infinite;"/>
+  </svg>
+</div>
+
+<div class="container" style="padding:2.5rem 0 4rem; position: relative; z-index: 1;">
+
+  <div class="text-center mb-5 results-header">
+    <h2 style="font-size:2rem;font-weight:800;color:var(--warning);">Interview Results</h2>
+    <p class="text-muted">{{ interview_category }} — {{ total }} Questions Completed</p>
+  </div>
+
+  <div class="row g-4 mb-5">
+    <div class="col-md-12">
+      <div class="card p-5">
+        <div class="d-flex flex-column align-items-center justify-content-center text-center" style="gap: 1.5rem;">
+          <div style="margin-bottom: 1rem;">
+            <h5 style="font-weight: 700; color: var(--text); margin-bottom: 1.5rem; font-size: 1.1rem;">Overall Performance</h5>
+          </div>
+          <div class="score-ring {% if avg_score >= 80 %}score-excellent{% elif avg_score >= 65 %}score-good{% elif avg_score >= 50 %}score-average{% else %}score-poor{% endif %}">
+            <span>{{ avg_score|int }}</span>
+            <small>/100</small>
+          </div>
+          <div style="margin-top: 1rem;">
+            <h4 style="font-weight: 800; color: var(--text); font-size: 1.3rem;">{{ performance_label }}</h4>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card live-metrics-card p-4 p-lg-5 mb-5">
+    <div class="d-flex align-items-start justify-content-between flex-wrap gap-3 mb-4">
+      <div>
+        <h5 style="font-weight:800;color:var(--text);margin-bottom:0.35rem;">
+          <i class="bi bi-activity me-2 text-primary"></i>Live Interview Pulse
+        </h5>
+        <p class="text-muted mb-0">A dynamic snapshot of your latest interview analysis across the most important performance signals.</p>
+      </div>
+      <span class="live-metrics-chip">
+        <i class="bi bi-lightning-charge-fill me-1"></i>Live Metrics
+      </span>
+    </div>
+
+    <div class="row g-4 align-items-center">
+      <div class="col-lg-5">
+        <div class="live-metrics-spotlight">
+          <div class="live-metrics-orb orb-one"></div>
+          <div class="live-metrics-orb orb-two"></div>
+          <span class="live-metrics-overline">Interview Health</span>
+          <div class="live-metrics-scoreline">
+            <span id="results-live-avg">0</span>
+            <small>/100</small>
+          </div>
+          <p class="live-metrics-title" id="results-live-title">{{ performance_label }}</p>
+          <p class="live-metrics-subtitle">{{ interview_category }} interview performance overview</p>
+          <div class="live-metrics-mini">
+            <div>
+              <span>Good Ratio</span>
+              <strong id="results-good-ratio">0%</strong>
+            </div>
+            <div>
+              <span>Completion</span>
+              <strong id="results-total-ratio">0%</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-7">
+        <div class="live-bars-grid" id="results-live-board">
+          <div class="live-bar-card">
+            <span class="live-bar-label">Good Answers</span>
+            <strong class="live-bar-number" id="results-good-count">0</strong>
+            <div class="live-bar-track"><div class="live-bar-fill good" id="results-good-fill"></div></div>
+          </div>
+          <div class="live-bar-card">
+            <span class="live-bar-label">Needs Work</span>
+            <strong class="live-bar-number" id="results-needs-work-count">0</strong>
+            <div class="live-bar-track"><div class="live-bar-fill needs-work" id="results-needs-work-fill"></div></div>
+          </div>
+          <div class="live-bar-card">
+            <span class="live-bar-label">Total Questions</span>
+            <strong class="live-bar-number" id="results-total-count">0</strong>
+            <div class="live-bar-track"><div class="live-bar-fill total" id="results-total-fill"></div></div>
+          </div>
+          <div class="live-bar-card">
+            <span class="live-bar-label">Avg Score</span>
+            <strong class="live-bar-number" id="results-avg-count">0</strong>
+            <div class="live-bar-track"><div class="live-bar-fill avg" id="results-avg-fill"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4 mb-5">
+    <div class="col-md-12">
+      <div class="card p-4">
+        <h6 style="font-weight:700;color:var(--text);margin-bottom:1rem;">Answer Breakdown</h6>
+        {% for cat, count in cat_counts.items() %}
+          {% set pct = (count / total * 100)|int %}
+          {% if cat == 'Good Answer' %}{% set col = 'success' %}
+          {% elif cat in ('Technical Weakness','Conceptual Weakness','Weak Response') %}{% set col = 'warning' %}
+          {% elif cat == 'Communication Weakness' %}{% set col = 'primary' %}
+          {% else %}{% set col = 'danger' %}{% endif %}
+          <div class="mb-3">
+            <div class="d-flex justify-content-between mb-1" style="font-size:0.82rem;">
+              <span style="color:var(--text);">{{ cat }}</span>
+              <span class="text-muted">{{ count }}/{{ total }}</span>
+            </div>
+            <div class="progress-dark">
+              <div class="progress-fill {{ col }}" style="width:{{ pct }}%;"></div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4 mb-5">
+    <div class="col-md-4">
+      <div class="card p-4 h-100" style="border-left:4px solid var(--success);">
+        <div class="d-flex align-items-center gap-2 mb-3">
+          <i class="bi bi-trophy-fill text-success"></i>
+          <span style="font-weight:700;color:var(--text);">Strong Points</span>
+        </div>
+        {% for p in strong_points %}
+        <div class="point-item">
+          <i class="bi bi-check-circle-fill text-success mt-1 flex-shrink-0" style="font-size:0.85rem;"></i>
+          <span class="text-muted" style="font-size:0.88rem;">{{ p }}</span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card p-4 h-100" style="border-left:4px solid var(--warning);">
+        <div class="d-flex align-items-center gap-2 mb-3">
+          <i class="bi bi-exclamation-triangle-fill text-warning"></i>
+          <span style="font-weight:700;color:var(--text);">Areas to Improve</span>
+        </div>
+        {% for p in weak_points %}
+        <div class="point-item">
+          <i class="bi bi-arrow-up-circle-fill text-warning mt-1 flex-shrink-0" style="font-size:0.85rem;"></i>
+          <span class="text-muted" style="font-size:0.88rem;">{{ p }}</span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card p-4 h-100" style="border-left:4px solid var(--primary);">
+        <div class="d-flex align-items-center gap-2 mb-1">
+          <i class="bi bi-briefcase-fill text-primary"></i>
+          <span style="font-weight:700;color:var(--text);">Job Recommendations</span>
+        </div>
+        <p class="text-muted small mb-3">{{ interview_category }} — <strong>{{ job_label }}</strong></p>
+        {% for job in job_recommendations %}
+        <div class="point-item">
+          <i class="bi bi-briefcase text-primary mt-1 flex-shrink-0" style="font-size:0.85rem;"></i>
+          <span class="text-muted" style="font-size:0.88rem;">{{ job }}</span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Feature 3: 30-Day Learning Planner -->
+  <div class="card p-4 mb-4" style="border-top:4px solid var(--success);">
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+      <div>
+        <h6 style="font-weight:700;color:var(--text);margin-bottom:4px;">
+          <i class="bi bi-calendar3 me-2 text-success"></i>30-Day Learning Planner
+        </h6>
+        <p class="text-muted small mb-0">Generate a personalized day-by-day study plan for any skill</p>
+      </div>
+      <div class="d-flex gap-2 align-items-center flex-wrap">
+        <select id="planSkillSelect" class="form-control" style="width:180px;">
+          <option value="{{ interview_category }}">{{ interview_category }} (Current)</option>
+          <option value="Python">Python</option>
+          <option value="JavaScript">JavaScript</option>
+          <option value="DSA">DSA</option>
+          <option value="SQL">SQL</option>
+        </select>
+        <button class="btn btn-success fw-bold px-4" onclick="generatePlan()">
+          <i class="bi bi-calendar-plus me-2"></i>Generate 30-Day Plan
+        </button>
+      </div>
+    </div>
+    <div id="planLoader" style="display:none;text-align:center;padding:1.5rem;">
+      <div class="spinner"></div>
+      <p class="text-muted mt-2">Generating your personalized plan...</p>
+    </div>
+    <div id="planResult" style="display:none;margin-top:1.5rem;"></div>
+  </div>
+
+  <div class="card p-4 mb-5">
+    <h6 style="font-weight:700;color:var(--text);margin-bottom:1.5rem;">
+      <i class="bi bi-list-check me-2 text-primary"></i>Question-by-Question Review
+    </h6>
+    {% for a in answers %}
+      {% set parts   = a.feedback.split('||SUGG||') %}
+      {% set main_fb = parts[0] %}
+      {% set rest    = parts[1] if parts|length > 1 else '' %}
+      {% set sp      = rest.split('||CNOTE||') %}
+      {% set suggs   = sp[0].split('||S||') if sp[0] else [] %}
+
+      {% if a.result_category == 'Good Answer' %}{% set rc='good' %}{% set bc='success' %}
+      {% elif a.result_category in ('Confidence Low',) %}{% set rc='conf' %}{% set bc='danger' %}
+      {% else %}{% set rc='weak' %}{% set bc='warning' %}{% endif %}
+
+      <div class="answer-row {{ rc }} mb-3">
+        <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-2">
+          <span style="font-weight:600;font-size:0.9rem;color:var(--text);">Q{{ loop.index }}: {{ a.question }}</span>
+          <div class="d-flex gap-2 align-items-center">
+            <span class="badge bg-{{ bc }}">{{ a.result_category }}</span>
+            <span style="font-weight:700;font-size:0.88rem;color:var(--text);">{{ a.score }}/100</span>
+          </div>
+        </div>
+        <p class="text-muted fst-italic" style="font-size:0.85rem;margin-bottom:6px;">"{{ a.answer[:120] }}{% if a.answer|length > 120 %}...{% endif %}"</p>
+        <p class="text-muted" style="font-size:0.85rem;margin-bottom:0;">
+          <i class="bi bi-chat-dots me-1 text-primary"></i>{{ main_fb }}
+        </p>
+        {% if suggs %}
+        <div style="background:rgba(79,70,229,0.05);border-radius:8px;padding:0.7rem;margin-top:8px;">
+          <p style="font-size:0.78rem;font-weight:700;color:var(--primary);margin-bottom:5px;">
+            <i class="bi bi-lightbulb-fill me-1"></i>Suggestions:
+          </p>
+          {% for s in suggs %}{% if s.strip() %}
+          <p class="text-muted" style="font-size:0.82rem;margin:0;">• {{ s.strip() }}</p>
+          {% endif %}{% endfor %}
+        </div>
+        {% endif %}
+      </div>
+    {% endfor %}
+  </div>
+
+  <!-- Feature 1: Session Chatbot -->
+  {% set chatbot_mode = 'session' %}
+  {% set chatbot_context_json = session_context %}
+  {% set chatbot_title = '🤖 AI Coach — Ask About Your Results' %}
+  {% include 'chatbot_component.html' %}
+
+  <div class="d-flex gap-3 justify-content-center flex-wrap mt-4">
+    <a href="{{ url_for('select_category') }}" class="btn btn-primary fw-bold px-4">
+      <i class="bi bi-arrow-repeat me-2"></i>Try Another Category
+    </a>
+    <a href="{{ url_for('skill_analysis') }}" class="btn btn-success fw-bold px-4">
+      <i class="bi bi-bar-chart me-2"></i>Analyse My Skills
+    </a>
+    <a href="{{ url_for('dashboard') }}" class="btn btn-outline-primary fw-bold px-4">
+      <i class="bi bi-grid me-2"></i>Dashboard
+    </a>
+    <button class="btn btn-info fw-bold px-4" onclick="openResultsEmailModal({{ session_id }})">
+      <i class="bi bi-envelope-check me-2"></i>Share via Email
+    </button>
+  </div>
+
+</div>
+
+<div class="modal fade" id="resultsEmailModal" tabindex="-1" aria-labelledby="resultsEmailModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" style="border-radius:20px;border:none;overflow:hidden;">
+      <div class="modal-header border-0 pb-0">
+        <div>
+          <h5 class="modal-title fw-bold" id="resultsEmailModalLabel">Send Interview Report</h5>
+          <p class="text-muted small mb-0">The email will include student profile details in text and the PDF report for this interview.</p>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body pt-3">
+        <div id="resultsEmailStatus" class="alert d-none" role="alert"></div>
+        <label for="resultsReportRecipient" class="form-label fw-semibold">Recipient Email</label>
+        <input type="email" id="resultsReportRecipient" class="form-control" placeholder="Leave blank to send to your registered email">
+      </div>
+      <div class="modal-footer border-0 pt-0">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary px-4" id="resultsEmailSendBtn" onclick="sendResultsEmailReport()">
+          <i class="bi bi-send-check me-2"></i>Send Report
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .live-metrics-card {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(79, 70, 229, 0.12);
+    background:
+      radial-gradient(circle at top left, rgba(56, 189, 248, 0.16), transparent 34%),
+      radial-gradient(circle at bottom right, rgba(139, 92, 246, 0.14), transparent 32%),
+      linear-gradient(145deg, rgba(255, 255, 255, 0.96), rgba(248, 250, 252, 0.94));
+  }
+
+  .live-metrics-chip {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    padding: 0.45rem 0.85rem;
+    background: rgba(79, 70, 229, 0.1);
+    color: #4338ca;
+    font-size: 0.8rem;
+    font-weight: 700;
+  }
+
+  .live-metrics-spotlight {
+    position: relative;
+    overflow: hidden;
+    min-height: 280px;
+    border-radius: 28px;
+    padding: 1.6rem;
+    background: linear-gradient(160deg, #0f172a, #1e293b 58%, #312e81);
+    color: #fff;
+    box-shadow: 0 26px 50px rgba(15, 23, 42, 0.18);
+  }
+
+  .live-metrics-overline {
+    position: relative;
+    z-index: 1;
+    display: inline-block;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.76rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .live-metrics-scoreline {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: baseline;
+    gap: 0.3rem;
+    margin-top: 1rem;
+  }
+
+  .live-metrics-scoreline span {
+    font-size: 4rem;
+    line-height: 1;
+    font-weight: 800;
+  }
+
+  .live-metrics-scoreline small {
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.66);
+  }
+
+  .live-metrics-title {
+    position: relative;
+    z-index: 1;
+    margin: 0.65rem 0 0.25rem;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #f8fafc;
+  }
+
+  .live-metrics-subtitle {
+    position: relative;
+    z-index: 1;
+    margin: 0;
+    color: rgba(255, 255, 255, 0.72);
+    font-size: 0.92rem;
+  }
+
+  .live-metrics-mini {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.85rem;
+    margin-top: 1.4rem;
+  }
+
+  .live-metrics-mini div {
+    padding: 0.9rem 1rem;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(8px);
+  }
+
+  .live-metrics-mini span {
+    display: block;
+    font-size: 0.76rem;
+    color: rgba(255, 255, 255, 0.64);
+    margin-bottom: 0.25rem;
+  }
+
+  .live-metrics-mini strong {
+    font-size: 1.2rem;
+    font-weight: 800;
+  }
+
+  .live-metrics-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(8px);
+    opacity: 0.65;
+  }
+
+  .orb-one {
+    width: 160px;
+    height: 160px;
+    top: -36px;
+    right: -30px;
+    background: radial-gradient(circle, rgba(56, 189, 248, 0.58), transparent 68%);
+    animation: floatOrb 7s ease-in-out infinite;
+  }
+
+  .orb-two {
+    width: 120px;
+    height: 120px;
+    bottom: -28px;
+    left: -18px;
+    background: radial-gradient(circle, rgba(244, 114, 182, 0.45), transparent 68%);
+    animation: floatOrb 8s ease-in-out infinite reverse;
+  }
+
+  .live-bars-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+  }
+
+  .live-bar-card {
+    border-radius: 22px;
+    padding: 1.15rem;
+    background: rgba(255, 255, 255, 0.78);
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  }
+
+  .live-bar-label {
+    display: block;
+    color: var(--text-light);
+    font-size: 0.82rem;
+    font-weight: 700;
+    margin-bottom: 0.45rem;
+  }
+
+  .live-bar-number {
+    display: block;
+    color: var(--text);
+    font-size: 1.8rem;
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 0.85rem;
+  }
+
+  .live-bar-track {
+    height: 12px;
+    border-radius: 999px;
+    overflow: hidden;
+    background: rgba(148, 163, 184, 0.16);
+  }
+
+  .live-bar-fill {
+    height: 100%;
+    width: 0;
+    border-radius: inherit;
+    transition: width 0.95s cubic-bezier(.22, 1, .36, 1);
+  }
+
+  .live-bar-fill.good {
+    background: linear-gradient(90deg, #34d399, #059669);
+    box-shadow: 0 0 18px rgba(16, 185, 129, 0.25);
+  }
+
+  .live-bar-fill.needs-work {
+    background: linear-gradient(90deg, #fb7185, #ef4444);
+    box-shadow: 0 0 18px rgba(239, 68, 68, 0.2);
+  }
+
+  .live-bar-fill.total {
+    background: linear-gradient(90deg, #818cf8, #4f46e5);
+    box-shadow: 0 0 18px rgba(79, 70, 229, 0.2);
+  }
+
+  .live-bar-fill.avg {
+    background: linear-gradient(90deg, #fbbf24, #f59e0b);
+    box-shadow: 0 0 18px rgba(245, 158, 11, 0.2);
+  }
+
+  .home-interface .live-bar-card {
+    background: linear-gradient(135deg, rgba(124, 58, 237, 0.92), rgba(79, 70, 229, 0.92));
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    box-shadow: 0 18px 40px rgba(79, 70, 229, 0.18);
+  }
+
+  .home-interface .live-bar-label {
+    color: rgba(255, 255, 255, 0.78);
+  }
+
+  .home-interface .live-bar-number {
+    color: #ffffff;
+  }
+
+  .home-interface .live-bar-track {
+    background: rgba(255, 255, 255, 0.22);
+  }
+
+  @keyframes floatOrb {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(12px); }
+  }
+
+  @media (max-width: 767px) {
+    .live-bars-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .live-metrics-scoreline span {
+      font-size: 3.25rem;
+    }
+  }
+</style>
+{% endblock %}
+{% block scripts %}
+<script>
+function animateNumber(element, target, suffix = '') {
+  const startValue = parseFloat(element.dataset.value || '0');
+  const duration = 850;
+  const startTime = performance.now();
+
+  function step(now) {
+    const progress = Math.min((now - startTime) / duration, 1);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    const current = startValue + (target - startValue) * eased;
+    const value = Number.isInteger(target) ? Math.round(current) : current.toFixed(1);
+    element.textContent = `${value}${suffix}`;
+
+    if (progress < 1) {
+      requestAnimationFrame(step);
+    } else {
+      element.textContent = `${target}${suffix}`;
+      element.dataset.value = target;
+    }
+  }
+
+  requestAnimationFrame(step);
+}
+
+function updateLiveMetricsBoard(payload) {
+  const totalGoal = Math.max(payload.totalQuestions || 0, 10);
+  const goodRatio = payload.totalQuestions ? Math.round((payload.goodAnswers / payload.totalQuestions) * 100) : 0;
+  const completionRatio = Math.round((payload.totalQuestions / totalGoal) * 100);
+
+  animateNumber(document.getElementById('results-live-avg'), payload.avgScore);
+  animateNumber(document.getElementById('results-avg-count'), payload.avgScore);
+  animateNumber(document.getElementById('results-good-count'), payload.goodAnswers);
+  animateNumber(document.getElementById('results-needs-work-count'), payload.needsWork);
+  animateNumber(document.getElementById('results-total-count'), payload.totalQuestions);
+
+  document.getElementById('results-live-title').textContent = payload.label;
+  document.getElementById('results-good-ratio').textContent = `${goodRatio}%`;
+  document.getElementById('results-total-ratio').textContent = `${completionRatio}%`;
+  document.getElementById('results-good-fill').style.width = `${goodRatio}%`;
+  document.getElementById('results-needs-work-fill').style.width = `${payload.totalQuestions ? Math.round((payload.needsWork / payload.totalQuestions) * 100) : 0}%`;
+  document.getElementById('results-total-fill').style.width = `${completionRatio}%`;
+  document.getElementById('results-avg-fill').style.width = `${Math.max(0, Math.min(100, payload.avgScore))}%`;
+}
+
+let resultsEmailModal;
+let activeResultsSessionId = null;
+
+function openResultsEmailModal(sessionId) {
+  activeResultsSessionId = sessionId;
+  const status = document.getElementById('resultsEmailStatus');
+  const input = document.getElementById('resultsReportRecipient');
+  status.className = 'alert d-none';
+  status.textContent = '';
+  input.value = '';
+  resultsEmailModal.show();
+}
+
+async function sendResultsEmailReport() {
+  const btn = document.getElementById('resultsEmailSendBtn');
+  const status = document.getElementById('resultsEmailStatus');
+  const recipient = document.getElementById('resultsReportRecipient').value.trim();
+
+  status.className = 'alert d-none';
+  status.textContent = '';
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Sending...';
+
+  try {
+    const res = await fetch('/send-session-report-email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        session_id: activeResultsSessionId,
+        recipient_email: recipient
+      })
+    });
+    const data = await res.json();
+    if (!res.ok || !data.success) {
+      const message = data.error || 'Failed to send report.';
+      const details = data.details ? `\n\nDetails: ${data.details}` : '';
+      throw new Error(`${message}${details}`);
+    }
+    status.className = 'alert alert-success';
+    status.textContent = data.message;
+    setTimeout(() => resultsEmailModal.hide(), 1200);
+  } catch (error) {
+    status.className = 'alert alert-danger';
+    status.textContent = error.message;
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="bi bi-send-check me-2"></i>Send Report';
+  }
+}
+// ── Share Report via Email (frontend-only Gmail compose) ──────────────────────
+
+/**
+ * Collects all analysis data from Jinja-rendered template variables,
+ * builds a formatted email body, and opens Gmail compose in a new tab.
+ * No backend, no SMTP, no libraries required.
+ */
+function generateEmailContent() {
+  // ── Pull data from Jinja template variables ──
+  const userName        = {{ session.get('user_name', '') | tojson }};
+  const category        = {{ interview_category | tojson }};
+  const avgScore        = {{ avg_score | int }};
+  const perfLabel       = {{ performance_label | tojson }};
+  const totalQuestions  = {{ total }};
+
+  const strongPoints = [
+    {% for p in strong_points %}"{{ p | e }}",{% endfor %}
+  ];
+
+  const weakPoints = [
+    {% for p in weak_points %}"{{ p | e }}",{% endfor %}
+  ];
+
+  const jobRecommendations = [
+    {% for job in job_recommendations %}"{{ job | e }}",{% endfor %}
+  ];
+
+  const catCounts = {
+    {% for cat, count in cat_counts.items() %}"{{ cat | e }}": {{ count }},{% endfor %}
+  };
+
+  // ── Build plain-text email body ──
+  const greeting = userName ? `Hello ${userName},` : "Hello,";
+
+  const catBreakdown = Object.entries(catCounts)
+    .map(([cat, cnt]) => `  • ${cat}: ${cnt}/${totalQuestions}`)
+    .join("\n");
+
+  const strengths = strongPoints.map(p => `  ✓ ${p}`).join("\n");
+  const weaknesses = weakPoints.map(p => `  ✗ ${p}`).join("\n");
+  const recommendations = jobRecommendations.map(j => `  → ${j}`).join("\n");
+
+  const body = [
+    greeting,
+    "",
+    "Here is my Skill Gap Analysis Report:",
+    "═══════════════════════════════════════",
+    "",
+    "📌 SKILLS ANALYZED",
+    `  Category : ${category}`,
+    `  Questions: ${totalQuestions}`,
+    "",
+    "📊 OVERALL SCORE",
+    `  Score       : ${avgScore}/100`,
+    `  Performance : ${perfLabel}`,
+    "",
+    "📋 ANSWER BREAKDOWN",
+    catBreakdown,
+    "",
+    "✅ STRENGTHS",
+    strengths,
+    "",
+    "⚠️  AREAS TO IMPROVE",
+    weaknesses,
+    "",
+    "💼 JOB RECOMMENDATIONS",
+    recommendations,
+    "",
+    "═══════════════════════════════════════",
+    "Generated by Skill Gap Analyzer",
+    "https://skillgap.ai",
+  ].join("\n");
+
+  return {
+    subject: "Skill Gap Analysis Report",
+    body,
+  };
+}
+
+function shareReportViaEmail() {
+  const { subject, body } = generateEmailContent();
+
+  const encodedSubject = encodeURIComponent(subject);
+  const encodedBody    = encodeURIComponent(body);
+
+  const gmailUrl =
+    `https://mail.google.com/mail/?view=cm&fs=1&to=&su=${encodedSubject}&body=${encodedBody}`;
+
+  window.open(gmailUrl, "_blank");
+}
+
+// ── Feature 3: 30-Day Plan generator ─────────────────────────────────────────
+
+async function generatePlan() {
+  const skill = document.getElementById('planSkillSelect').value;
+  document.getElementById('planResult').style.display = 'none';
+  document.getElementById('planLoader').style.display = 'block';
+  try {
+    const res  = await fetch('/api/learning-plan', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ skill, session_id: {{ session_id }} })
+    });
+    const data = await res.json();
+    document.getElementById('planLoader').style.display = 'none';
+    if (data.error) {
+      document.getElementById('planResult').innerHTML = `<div class="alert alert-danger">${data.error}</div>`;
+    } else {
+      renderPlan(data.plan, data.skill);
+    }
+    document.getElementById('planResult').style.display = 'block';
+  } catch(e) {
+    document.getElementById('planLoader').style.display = 'none';
+    document.getElementById('planResult').innerHTML = `<div class="alert alert-danger">Error generating plan.</div>`;
+    document.getElementById('planResult').style.display = 'block';
+  }
+}
+
+function renderPlan(plan, skill) {
+  const phaseColors = { 'Foundation': '#4f46e5', 'Core Skills': '#10b981', 'Advanced & Project': '#f59e0b' };
+  let currentPhase = '';
+  let html = `<h6 style="font-weight:700;color:var(--text);margin-bottom:1rem;">
+    <i class="bi bi-calendar3 me-2 text-success"></i>30-Day ${skill} Learning Plan
+  </h6>
+  <div class="row g-2">`;
+
+  plan.forEach(day => {
+    if (day.phase !== currentPhase) {
+      if (currentPhase) html += '</div></div>';
+      const col = phaseColors[day.phase] || '#4f46e5';
+      html += `<div class="col-12 mt-2 mb-1">
+        <span class="badge" style="background:${col};font-size:0.82rem;padding:5px 12px;">${day.phase} (Days ${day.phase==='Foundation'?'1–10':day.phase==='Core Skills'?'11–20':'21–30'})</span>
+      </div><div class="col-12"><div class="row g-2">`;
+      currentPhase = day.phase;
+    }
+    const col = phaseColors[day.phase] || '#4f46e5';
+    html += `
+      <div class="col-md-6 col-lg-4">
+        <div class="card p-3 h-100" style="border-left:3px solid ${col};border-radius:10px;">
+          <div class="d-flex align-items-center gap-2 mb-1">
+            <span style="width:28px;height:28px;border-radius:50%;background:${col};color:#fff;display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:700;flex-shrink:0;">
+              ${day.day}
+            </span>
+            <span style="font-weight:700;font-size:0.82rem;color:var(--text);">${day.topic}</span>
+          </div>
+          <p class="text-muted mb-1" style="font-size:0.78rem;"><i class="bi bi-check2 me-1"></i>${day.task}</p>
+          <div style="margin-top:0.5rem;">
+            <span class="badge" style="background:${col};opacity:0.8;font-size:0.7rem;">${day.domain}</span>
+          </div>
+        </div>
+      </div>`;
+  });
+
+  html += '</div></div></div>';
+  document.getElementById('planResult').innerHTML = html;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const modalElement = document.getElementById('resultsEmailModal');
+  if (modalElement) {
+    resultsEmailModal = new bootstrap.Modal(modalElement);
+  }
+
+  updateLiveMetricsBoard({
+    goodAnswers: {{ cat_counts.get('Good Answer', 0) }},
+    needsWork: {{ total - cat_counts.get('Good Answer', 0) }},
+    totalQuestions: {{ total }},
+    avgScore: {{ avg_score|round(1) }},
+    label: {{ performance_label|tojson }}
+  });
+});
+</script>
+{% endblock %}

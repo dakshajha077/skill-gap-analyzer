@@ -1,0 +1,643 @@
+{% extends 'base.html' %}
+{% block title %}Profile – SkillGap AI{% endblock %}
+{% block body_class %}dashboard-bg profile-page{% endblock %}
+{% block content %}
+
+<div class="settings-shapes-bg" style="position: fixed; top: 0; left: 0; right: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0;" aria-hidden="true">
+  <svg class="shapes-svg" viewBox="0 0 1400 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" style="animation: shapeFloat 8s ease-in-out infinite;">
+    <defs>
+      <radialGradient id="sg1" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#f472b6" stop-opacity="0.28"/>
+        <stop offset="100%" stop-color="#f472b6" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="sg2" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.25"/>
+        <stop offset="100%" stop-color="#38bdf8" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="sg3" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#34d399" stop-opacity="0.22"/>
+        <stop offset="100%" stop-color="#34d399" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="sg4" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#fb923c" stop-opacity="0.22"/>
+        <stop offset="100%" stop-color="#fb923c" stop-opacity="0"/>
+      </radialGradient>
+      <filter id="glow">
+        <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+        <feMerge>
+          <feMergeNode in="coloredBlur"/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+    </defs>
+    <ellipse cx="1300" cy="120" rx="160" ry="160" fill="url(#sg1)" style="animation: shapeGlow 3s ease-in-out infinite;" filter="url(#glow)"/>
+    <ellipse cx="1300" cy="120" rx="110" ry="110" fill="#fce7f3" opacity="0.42" style="animation: shimmerOverlay 4s ease-in-out infinite;"/>
+    <ellipse cx="1268" cy="92" rx="42" ry="28" fill="#fff" opacity="0.28"/>
+    <rect x="1100" y="160" width="75" height="230" rx="37" fill="#7dd3fc" opacity="0.28" transform="rotate(30 1137 275)" style="animation: shapeFloat 6s ease-in-out infinite 0.5s;"/>
+    <ellipse cx="80" cy="680" rx="140" ry="140" fill="url(#sg2)" style="animation: shapeGlow 4s ease-in-out infinite 1s;" filter="url(#glow)"/>
+    <ellipse cx="80" cy="680" rx="95" ry="95" fill="#bae6fd" opacity="0.35"/>
+    <ellipse cx="55" cy="655" rx="34" ry="22" fill="#fff" opacity="0.26"/>
+    <rect x="-80" y="530" width="300" height="80" rx="40" fill="#fdba74" opacity="0.26" transform="rotate(-15 70 570)" style="animation: shapeFloat 7s ease-in-out infinite 1.5s;"/>
+    <ellipse cx="370" cy="490" rx="58" ry="58" fill="url(#sg3)" style="animation: shapeGlow 3.5s ease-in-out infinite 0.8s;" filter="url(#glow)"/>
+    <ellipse cx="370" cy="490" rx="40" ry="40" fill="#a7f3d0" opacity="0.30" style="animation: shimmerOverlay 5s ease-in-out infinite 0.3s;"/>
+    <ellipse cx="354" cy="474" rx="15" ry="10" fill="#fff" opacity="0.33"/>
+    <rect x="1050" y="620" width="340" height="95" rx="47" fill="#a3e635" opacity="0.20" transform="rotate(-20 1220 667)" style="animation: shapeFloat 8s ease-in-out infinite 1.2s;"/>
+    <ellipse cx="1360" cy="820" rx="130" ry="130" fill="url(#sg4)" style="animation: shapeGlow 4.5s ease-in-out infinite 1.5s;" filter="url(#glow)"/>
+    <ellipse cx="1360" cy="820" rx="90" ry="90" fill="#fed7aa" opacity="0.32" style="animation: shimmerOverlay 6s ease-in-out infinite 0.6s;"/>
+    <ellipse cx="200" cy="300" rx="220" ry="80" fill="#e879f9" opacity="0.10" style="animation: shimmerOverlay 5s ease-in-out infinite;"/>
+  </svg>
+</div>
+
+<div class="container" style="padding: 2.5rem 0 4rem; position: relative; z-index: 1;">
+
+  <div class="mb-5">
+    <h2 style="font-size: 2rem; font-weight: 800; color: #fbbc04; margin-bottom: 0.5rem;">
+      <i class="bi bi-person-fill me-2" style="color: var(--primary);"></i>Profile
+    </h2>
+    <p style="color: rgba(255, 255, 255, 0.88);">Manage your profile and connected devices</p>
+  </div>
+
+  <div class="row g-4">
+    <!-- Device Management (swapped) -->
+    <div class="col-lg-4">
+      <div class="card p-4">
+        <h5 style="font-weight: 700; color: var(--text); margin-bottom: 1rem;">
+          <i class="bi bi-phone-fill me-2 text-success"></i>Active Devices
+        </h5>
+        <p class="text-muted small mb-3">
+          Your account is logged in on the following devices. You can revoke access to any device remotely.
+        </p>
+
+        <div id="devices-container" class="mb-3">
+          <div class="text-center" style="padding: 2rem;">
+            <div class="spinner mx-auto mb-2"></div>
+            <p class="text-muted">Loading devices...</p>
+          </div>
+        </div>
+
+        <div style="background: linear-gradient(135deg, #FEF3C7 0%, #FFEDD5 100%); border: 1px solid #FDE68A; border-radius: 12px; padding: 1rem; margin-top: 1.5rem;">
+          <div class="d-flex gap-2">
+            <i class="bi bi-info-circle-fill text-warning flex-shrink-0" style="margin-top: 0.25rem;"></i>
+            <div>
+              <h6 class="mb-1" style="color: #92400E; font-weight: 600;">Multi-Device Support</h6>
+              <p class="text-muted small mb-0">You can now access your account from multiple devices simultaneously. All devices share the same data and progress.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Account Info (swapped) -->
+    <div class="col-lg-8">
+      <div class="card p-4">
+        <h5 style="font-weight: 700; color: var(--text); margin-bottom: 1.5rem;">
+          <i class="bi bi-person-fill me-2 text-primary"></i>Profile Information
+        </h5>
+        <div class="profile-summary-card mb-4">
+          <div class="profile-avatar">
+            <img
+              id="profile-avatar-img"
+              src="{{ user_avatar_url }}"
+              alt="Profile picture"
+              class="profile-avatar-img {% if not user_avatar_url %}d-none{% endif %}"
+            >
+            <span id="profile-avatar-letter" class="{% if user_avatar_url %}d-none{% endif %}">{{ (user_name[:1] if user_name else 'U')|upper }}</span>
+            <div class="profile-avatar-overlay" onclick="triggerAvatarUpload()" title="Change photo" role="button" aria-label="Change profile photo">
+              <i class="bi bi-camera-fill"></i>
+            </div>
+          </div>
+          <div>
+            <h6 class="profile-name mb-1" id="profile-name-heading">{{ user_name }}</h6>
+            <p class="profile-email mb-2" id="profile-email-heading">{{ user_email or 'Email not available' }}</p>
+            <span class="profile-badge">
+              <i class="bi bi-patch-check-fill me-1"></i>Professional Profile
+            </span>
+          </div>
+        </div>
+
+        <div id="profile-feedback" class="alert alert-success d-none" role="alert"></div>
+        <div id="profile-error" class="alert alert-danger d-none" role="alert"></div>
+
+        <div class="profile-info-grid">
+          <div class="profile-info-item">
+            <span class="profile-info-label">Full Name</span>
+            <span class="profile-info-value" id="profile-name-value">{{ user_name }}</span>
+          </div>
+          <div class="profile-info-item">
+            <span class="profile-info-label">Gmail Address</span>
+            <span class="profile-info-value" id="profile-email-value">{{ user_email or 'Not added yet' }}</span>
+          </div>
+          <div class="profile-info-item">
+            <span class="profile-info-label">Contact Number</span>
+            <span class="profile-info-value {% if not user_phone %}profile-info-muted{% endif %}" id="profile-phone-value">{{ user_phone or 'Add your contact number' }}</span>
+          </div>
+          <div class="profile-info-item">
+            <span class="profile-info-label">Location</span>
+            <span class="profile-info-value {% if not user_location %}profile-info-muted{% endif %}" id="profile-location-value">{{ user_location or 'Add your location' }}</span>
+          </div>
+          <div class="profile-info-item">
+            <span class="profile-info-label">Profile Status</span>
+            <span class="profile-info-value text-success">Active</span>
+          </div>
+          <div class="profile-info-item profile-info-item-wide">
+            <span class="profile-info-label">Member Since</span>
+            <span class="profile-info-value" id="account-created" data-created-at="{{ user_created_at }}">
+              {{ user_created_at or 'Not available' }}
+            </span>
+          </div>
+        </div>
+        <hr class="my-3" style="border-color: var(--border);">
+        <div class="d-grid gap-2">
+          <button class="btn btn-outline-secondary" onclick="triggerAvatarUpload()">
+            <i class="bi bi-camera me-2"></i>Change Photo
+          </button>
+          <button class="btn btn-outline-secondary {% if not user_avatar_url %}d-none{% endif %}" id="remove-photo-btn" onclick="removeAvatar()">
+            <i class="bi bi-trash3 me-2"></i>Remove Photo
+          </button>
+          <button class="btn btn-outline-primary" onclick="editProfile()">
+            <i class="bi bi-pencil-square me-2"></i>Edit Profile
+          </button>
+          <button class="btn btn-outline-danger" onclick="confirmLogout()">
+            <i class="bi bi-box-arrow-right me-2"></i>Sign Out
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<input type="file" id="avatar-input" accept="image/png,image/jpeg,image/webp" class="d-none">
+
+<div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content profile-modal-content">
+      <div class="modal-header border-0 pb-0">
+        <div>
+          <h5 class="modal-title fw-bold" id="editProfileModalLabel">Edit Profile Information</h5>
+          <p class="text-muted small mb-0">Update your professional details here.</p>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body pt-3">
+        <div id="profile-modal-error" class="alert alert-danger d-none" role="alert"></div>
+        <form id="profile-edit-form">
+          <div class="mb-3">
+            <label for="edit-name" class="form-label fw-semibold">Full Name</label>
+            <input type="text" id="edit-name" name="name" class="form-control" value="{{ user_name }}" required>
+          </div>
+          <div class="mb-3">
+            <label for="edit-email" class="form-label fw-semibold">Gmail Address</label>
+            <input type="email" id="edit-email" name="email" class="form-control" value="{{ user_email }}" required>
+          </div>
+          <div class="mb-3">
+            <label for="edit-phone" class="form-label fw-semibold">Contact Number</label>
+            <input type="text" id="edit-phone" name="phone" class="form-control" value="{{ user_phone or '' }}" placeholder="Enter your contact number">
+          </div>
+          <div class="mb-0">
+            <label for="edit-location" class="form-label fw-semibold">Location</label>
+            <input type="text" id="edit-location" name="location" class="form-control" value="{{ user_location or '' }}" placeholder="Enter your city or location">
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer border-0 pt-0">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="submit" form="profile-edit-form" class="btn btn-primary px-4" id="save-profile-btn">
+          <i class="bi bi-check2-circle me-2"></i>Save Changes
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  let profileModal;
+
+  function triggerAvatarUpload() {
+    document.getElementById('avatar-input')?.click();
+  }
+
+  async function uploadAvatar(file) {
+    const feedback = document.getElementById('profile-feedback');
+    const pageError = document.getElementById('profile-error');
+    feedback?.classList.add('d-none');
+    pageError?.classList.add('d-none');
+
+    const formData = new FormData();
+    formData.append('avatar', file);
+
+    const response = await fetch('/profile/avatar', { method: 'POST', body: formData });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok || !data.success) {
+      throw new Error(data.error || 'Unable to upload profile photo.');
+    }
+
+    const img = document.getElementById('profile-avatar-img');
+    const letter = document.getElementById('profile-avatar-letter');
+    const removeButton = document.getElementById('remove-photo-btn');
+
+    if (img && data.avatar_url) {
+      img.src = `${data.avatar_url}${data.avatar_url.includes('?') ? '&' : '?'}v=${Date.now()}`;
+      img.classList.remove('d-none');
+    }
+    letter?.classList.add('d-none');
+    removeButton?.classList.remove('d-none');
+
+    showProfileAlert('profile-feedback', data.message || 'Profile photo updated.');
+  }
+
+  async function removeAvatar() {
+    const feedback = document.getElementById('profile-feedback');
+    const pageError = document.getElementById('profile-error');
+    feedback?.classList.add('d-none');
+    pageError?.classList.add('d-none');
+
+    try {
+      const response = await fetch('/profile/avatar/delete', { method: 'POST' });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || 'Unable to remove profile photo.');
+      }
+
+      const img = document.getElementById('profile-avatar-img');
+      const letter = document.getElementById('profile-avatar-letter');
+      const removeButton = document.getElementById('remove-photo-btn');
+
+      img?.classList.add('d-none');
+      letter?.classList.remove('d-none');
+      removeButton?.classList.add('d-none');
+
+      showProfileAlert('profile-feedback', data.message || 'Profile photo removed.');
+    } catch (error) {
+      showProfileAlert('profile-error', error.message);
+    }
+  }
+
+  // Load user devices
+  async function loadDevices() {
+    try {
+      const response = await fetch('/api/devices');
+      const data = await response.json();
+      
+      const container = document.getElementById('devices-container');
+      if (data.devices.length === 0) {
+        container.innerHTML = '<p class="text-muted text-center">No active devices found</p>';
+        return;
+      }
+
+      let html = '<div class="list-group">';
+      data.devices.forEach(device => {
+        const lastActivity = new Date(device.lastActivity).toLocaleString();
+        const loginDate = new Date(device.loginDate).toLocaleDateString();
+        
+        html += `
+          <div class="list-group-item p-3 border-bottom">
+            <div class="row g-3 align-items-center">
+              <div class="col-auto">
+                <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #4f46e5, #7c3aed); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                  <i class="bi bi-${device.name.toLowerCase().includes('mobile') ? 'phone' : device.name.toLowerCase().includes('tablet') ? 'tablet' : 'laptop'}-fill text-white" style="font-size: 1.5rem;"></i>
+                </div>
+              </div>
+              <div class="col">
+                <h6 style="font-weight: 700; margin: 0; color: var(--text);">${device.name}</h6>
+                <p class="text-muted small mb-1">IP: ${device.ip}</p>
+                <p class="text-muted small mb-0">Logged in: ${loginDate}</p>
+                <p class="text-muted small mb-0">Last active: ${lastActivity}</p>
+              </div>
+              <div class="col-auto">
+                ${device.isCurrent ? 
+                  '<span class="badge bg-primary">Current Device</span>' : 
+                  `<button class="btn btn-sm btn-outline-danger" onclick="revokeDevice(${device.id})">
+                     <i class="bi bi-trash me-1"></i>Revoke
+                   </button>`
+                }
+              </div>
+            </div>
+          </div>
+        `;
+      });
+      html += '</div>';
+      container.innerHTML = html;
+    } catch (error) {
+      console.error('Error loading devices:', error);
+      document.getElementById('devices-container').innerHTML = 
+        '<p class="text-danger">Error loading devices. Please refresh the page.</p>';
+    }
+  }
+
+  // Revoke device access
+  async function revokeDevice(deviceId) {
+    if (!confirm('Are you sure you want to revoke access to this device?')) return;
+    
+    try {
+      const response = await fetch(`/api/devices/${deviceId}/revoke`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      
+      const data = await response.json();
+      if (response.ok) {
+        alert('Device access revoked successfully!');
+        loadDevices(); // Reload the list
+      } else {
+        alert('Error: ' + (data.error || 'Failed to revoke device'));
+      }
+    } catch (error) {
+      console.error('Error revoking device:', error);
+      alert('Error revoking device. Please try again.');
+    }
+  }
+
+  // Edit profile
+  function editProfile() {
+    document.getElementById('profile-modal-error').classList.add('d-none');
+    document.getElementById('edit-name').value = document.getElementById('profile-name-value').textContent.trim();
+    document.getElementById('edit-email').value = document.getElementById('profile-email-heading').textContent.trim() === 'Email not available'
+      ? ''
+      : document.getElementById('profile-email-heading').textContent.trim();
+    document.getElementById('edit-phone').value = document.getElementById('profile-phone-value').textContent.includes('Add your')
+      ? ''
+      : document.getElementById('profile-phone-value').textContent.trim();
+    document.getElementById('edit-location').value = document.getElementById('profile-location-value').textContent.includes('Add your')
+      ? ''
+      : document.getElementById('profile-location-value').textContent.trim();
+
+    profileModal.show();
+  }
+
+  // Confirm logout
+  function confirmLogout() {
+    if (confirm('Are you sure you want to sign out?')) {
+      window.location.href = '{{ url_for("logout") }}';
+    }
+  }
+
+  function setProfileText(id, value, fallbackText) {
+    const element = document.getElementById(id);
+    if (!element) return;
+
+    if (value) {
+      element.textContent = value;
+      element.classList.remove('profile-info-muted');
+    } else {
+      element.textContent = fallbackText;
+      element.classList.add('profile-info-muted');
+    }
+  }
+
+  function showProfileAlert(id, message) {
+    const element = document.getElementById(id);
+    if (!element) return;
+    element.textContent = message;
+    element.classList.remove('d-none');
+  }
+
+  async function submitProfileUpdate(event) {
+    event.preventDefault();
+
+    const saveButton = document.getElementById('save-profile-btn');
+    const modalError = document.getElementById('profile-modal-error');
+    const feedback = document.getElementById('profile-feedback');
+    const pageError = document.getElementById('profile-error');
+
+    modalError.classList.add('d-none');
+    feedback.classList.add('d-none');
+    pageError.classList.add('d-none');
+
+    const payload = {
+      name: document.getElementById('edit-name').value.trim(),
+      email: document.getElementById('edit-email').value.trim(),
+      phone: document.getElementById('edit-phone').value.trim(),
+      location: document.getElementById('edit-location').value.trim()
+    };
+
+    saveButton.disabled = true;
+    saveButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Saving...';
+
+    try {
+      const response = await fetch('/profile/update', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await response.json();
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || 'Unable to update profile.');
+      }
+
+      document.getElementById('profile-name-heading').textContent = data.profile.name;
+      document.getElementById('profile-email-heading').textContent = data.profile.email || 'Email not available';
+      document.getElementById('profile-name-value').textContent = data.profile.name;
+      document.getElementById('profile-email-value').textContent = data.profile.email || 'Not added yet';
+      document.getElementById('profile-avatar-letter').textContent = (data.profile.name || 'U').charAt(0).toUpperCase();
+
+      setProfileText('profile-phone-value', data.profile.phone, 'Add your contact number');
+      setProfileText('profile-location-value', data.profile.location, 'Add your location');
+
+      profileModal.hide();
+      showProfileAlert('profile-feedback', data.message || 'Profile updated successfully.');
+    } catch (error) {
+      modalError.textContent = error.message;
+      modalError.classList.remove('d-none');
+      showProfileAlert('profile-error', error.message);
+    } finally {
+      saveButton.disabled = false;
+      saveButton.innerHTML = '<i class="bi bi-check2-circle me-2"></i>Save Changes';
+    }
+  }
+
+  // Load on page start
+  document.addEventListener('DOMContentLoaded', () => {
+    const accountCreated = document.getElementById('account-created');
+    const createdAt = accountCreated?.dataset.createdAt;
+    const modalElement = document.getElementById('editProfileModal');
+
+    if (modalElement) {
+      profileModal = new bootstrap.Modal(modalElement);
+    }
+
+    document.getElementById('profile-edit-form')?.addEventListener('submit', submitProfileUpdate);
+
+    if (accountCreated && createdAt) {
+      const parsedDate = new Date(createdAt);
+      if (!Number.isNaN(parsedDate.getTime())) {
+        accountCreated.textContent = parsedDate.toLocaleDateString(undefined, {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+        });
+      }
+    }
+
+    loadDevices();
+  });
+
+  document.getElementById('avatar-input')?.addEventListener('change', async (event) => {
+    const file = event.target.files?.[0];
+    event.target.value = '';
+    if (!file) return;
+
+    try {
+      await uploadAvatar(file);
+    } catch (error) {
+      showProfileAlert('profile-error', error.message);
+    }
+  });
+</script>
+
+<style>
+  .profile-summary-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.1rem;
+    border-radius: 18px;
+    background: linear-gradient(135deg, rgba(79, 70, 229, 0.08), rgba(14, 165, 233, 0.08));
+    border: 1px solid rgba(79, 70, 229, 0.14);
+  }
+
+  .profile-avatar {
+    width: 64px;
+    height: 64px;
+    border-radius: 18px;
+    background: linear-gradient(135deg, #4f46e5, #06b6d4);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: 800;
+    flex-shrink: 0;
+    box-shadow: 0 14px 30px rgba(79, 70, 229, 0.2);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .profile-avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 18px;
+  }
+
+  .profile-avatar-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(15, 23, 42, 0);
+    color: rgba(255, 255, 255, 0);
+    transition: background 0.18s ease, color 0.18s ease;
+  }
+
+  .profile-avatar:hover .profile-avatar-overlay {
+    background: rgba(15, 23, 42, 0.35);
+    color: rgba(255, 255, 255, 0.95);
+    cursor: pointer;
+  }
+
+  .profile-name {
+    color: var(--text);
+    font-weight: 700;
+  }
+
+  .profile-email {
+    color: var(--muted);
+    font-size: 0.92rem;
+    word-break: break-word;
+  }
+
+  .profile-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.35rem 0.7rem;
+    border-radius: 999px;
+    background: rgba(34, 197, 94, 0.12);
+    color: #15803d;
+    font-size: 0.78rem;
+    font-weight: 700;
+  }
+
+  .profile-info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.9rem;
+  }
+
+  .profile-info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    padding: 0.95rem 1rem;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid var(--border);
+  }
+
+  .profile-info-item-wide {
+    grid-column: 1 / -1;
+  }
+
+  .profile-info-label {
+    color: var(--muted);
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .profile-info-value {
+    color: var(--text);
+    font-size: 0.95rem;
+    font-weight: 600;
+    word-break: break-word;
+  }
+
+  .profile-info-muted {
+    color: var(--muted);
+  }
+
+  .profile-modal-content {
+    border: 0;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 30px 70px rgba(15, 23, 42, 0.18);
+  }
+
+  .list-group-item {
+    background: var(--card-bg);
+    border-color: var(--border) !important;
+    transition: all 0.2s;
+  }
+  
+  .list-group-item:hover {
+    background: var(--bg-secondary);
+  }
+  
+  .spinner {
+    width: 30px;
+    height: 30px;
+    border: 3px solid var(--border);
+    border-top-color: var(--primary);
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+  }
+  
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  @media (max-width: 576px) {
+    .profile-info-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .profile-summary-card {
+      flex-direction: column;
+      text-align: center;
+    }
+  }
+</style>
+{% endblock %}
